@@ -385,6 +385,7 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
 .mw-list{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;width:100%;max-height:34vh;overflow-y:auto}
 .mw-chip{display:inline-flex;align-items:center;gap:6px;background:var(--cloud);border-radius:999px;padding:6px 6px 6px 14px;font-family:"Andika",var(--body);font-weight:700;font-size:20px}
 .mw-chip button{width:30px;height:30px;border-radius:50%;background:#fff;color:#ff4d5e;font-weight:800;font-size:18px;line-height:1}
+.deck-grid{grid-template-columns:minmax(0,440px);justify-content:center}
 .deck .dw{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mw-empty{color:var(--ink-soft);font-weight:800;margin:0}
 .gate-msg{color:#ff4d5e;font-weight:800;margin:0;min-height:1.3em}
@@ -1509,7 +1510,7 @@ const MYKEY="rainbowRescue.mywords";
 let myWords=[];try{const v=JSON.parse(localStorage.getItem(MYKEY)||"[]");if(Array.isArray(v))myWords=v.filter(x=>x&&typeof x.w==="string")}catch(e){}
 function saveMyWords(){try{localStorage.setItem(MYKEY,JSON.stringify(myWords))}catch(e){}}
 function esc(t){return String(t).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
-function allDecks(){return [{id:"mine",name:"My Words",tint:"#ff8a1f",words:myWords},...DECKS]}
+function allDecks(){return [{id:"mine",name:"My Words",tint:"#ff8a1f",words:myWords}]}
 function parentGate(onPass){
   const a=2+Math.floor(Math.random()*8),b=2+Math.floor(Math.random()*8);
   const p=openOverlay(`<h2>Grown-ups only</h2><p class="hint">What is ${a} + ${b}?</p>
