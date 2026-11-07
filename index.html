@@ -542,7 +542,7 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
       <span class="spacer"></span>
     </div>
     <div class="scroll">
-      <p class="pz-note" style="margin:0">Read the word out loud, then tap the speaker to check!</p>
+      <p class="pz-note" style="margin:0">Read the word out loud!</p>
       <div class="deck-grid" id="deckGrid"></div>
       <div class="grownup"><button id="btnMyWords">Grown-ups: edit My Words</button></div>
     </div>
@@ -560,8 +560,6 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
       <div class="fl-face fl-back"><div class="fl-pic" id="flPic"></div><div class="fl-word small" id="flWord2"></div><div class="fl-sent" id="flSent"></div></div>
     </div></div></div>
     <div class="fl-btns">
-      <button class="chip-btn blue" id="flHear"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4Z" fill="#fff"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Hear it</button>
-      <button class="chip-btn purple" id="flSlow"><svg viewBox="0 0 24 24"><path d="M3 15a8 6.5 0 0 1 16 0Z" fill="#fff"/><circle cx="20.5" cy="12.5" r="2.5" fill="#fff"/><path d="M6 15v3M15 15v3" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>Slowly</button>
       <button class="chip-btn green" id="flGot"><svg viewBox="0 0 24 24"><path d="M5 12.5 10 17l9-10" stroke="#fff" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>I read it!</button>
       <button class="chip-btn grey" id="flSkip"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Skip</button>
       <button class="chip-btn pink" id="flNext" hidden>Next<svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -1465,7 +1463,7 @@ function renderWords(){
 const flCard=document.getElementById("flCard"),flWord=document.getElementById("flWord"),flPic=document.getElementById("flPic"),flWord2=document.getElementById("flWord2"),flProg=document.getElementById("flProg");
 const flBtn=id=>document.getElementById(id);
 let flDeck=null,flCards=[],flIdx=0,flGot=0,flTimers=[];
-function flState(back){flBtn("flSlow").hidden=back;flBtn("flGot").hidden=back;flBtn("flSkip").hidden=back;flBtn("flNext").hidden=!back}
+function flState(back){flBtn("flGot").hidden=back;flBtn("flSkip").hidden=back;flBtn("flNext").hidden=!back}
 function startDeck(d){flDeck=d;flCards=shuffle(d.words).slice(0,8);flIdx=0;flGot=0;
   flProg.innerHTML=flCards.map(()=>`<i>${starOff}</i>`).join("");renderSoundBtn();show("flash");showCard(true)}
 function showCard(first){
@@ -1475,16 +1473,11 @@ function showCard(first){
   const setBack=()=>{flPic.innerHTML=wordPic(card);flWord2.textContent=card.w;const se=document.getElementById("flSent");se.textContent=card.s||"";se.hidden=!card.s};
   if(first)setBack();else setTimeout(setBack,350);
 }
-flBtn("flHear").onclick=()=>{audio();say(flCards[flIdx].w,.85,true)};
 flCard.addEventListener("click",()=>{audio();flCard.classList.toggle("flip");tone(flCard.classList.contains("flip")?720:520,0,.12,"triangle",.12)});
-flBtn("flSlow").onclick=()=>{audio();const w=flCards[flIdx].w,spans=[...flWord.children],n=spans.length,total=Math.max(1400,n*750);
-  flTimers.forEach(clearTimeout);flTimers=[];spans.forEach(s=>s.classList.remove("lit"));say(w,.2,true);
-  spans.forEach((s,i)=>flTimers.push(setTimeout(()=>{spans.forEach(x=>x.classList.remove("lit"));s.classList.add("lit")},i*total/n)));
-  flTimers.push(setTimeout(()=>spans.forEach(x=>x.classList.remove("lit")),total+300));};
 flBtn("flGot").onclick=()=>{audio();const card=flCards[flIdx];
   const list=wordsRead[flDeck.id]||(wordsRead[flDeck.id]=[]);if(!list.includes(card.w)){list.push(card.w);saveWords()}
   const st=flProg.children[flIdx];if(st){st.innerHTML=starSVG;st.classList.add("on")}
-  flGot++;flCard.classList.add("flip");flState(true);sfx.match();setTimeout(()=>say(`${card.w}! Great reading!`,.9,true),300)};
+  flGot++;flCard.classList.add("flip");flState(true);sfx.match();setTimeout(()=>say("Great reading!"),300)};
 function flAdvance(){flIdx++;if(flIdx>=flCards.length){finishWords();return}sfx.flip();showCard(false)}
 flBtn("flSkip").onclick=()=>{audio();flAdvance()};
 flBtn("flNext").onclick=()=>{audio();flAdvance()};
@@ -1492,7 +1485,7 @@ function finishWords(){
   sfx.win();confetti();
   const left=ALL.filter(c=>!collected.includes(c.id)),prize=flGot&&left.length?left[Math.floor(Math.random()*left.length)]:null;
   if(prize){collected.push(prize.id);save()}
-  say(prize?`You read ${flGot} words! ${prize.name} the ${prize.role} joined your card book!`:`You read ${flGot} words! Great job!`,.95,true);
+  say(prize?`You read ${flGot} words! ${prize.name} the ${prize.role} joined your card book!`:`You read ${flGot} words! Great job!`);
   const p=openOverlay(`<div class="stars3">${starSVG}${starSVG}${starSVG}</div><h2>You read ${flGot} word${flGot===1?"":"s"}!</h2>
     ${prize?`<div class="big-view small">${art(prize)}</div><p class="hint">${prize.name} the ${prize.role} joined your Card Book!</p>`:`<p class="hint">Super reading!</p>`}
     <div class="pop-row">${prize?`<button class="pop-btn" id="wBook">See my Card Book</button>`:""}<button class="pop-btn${prize?" alt":""}" id="wMore">Read more</button></div>`);
