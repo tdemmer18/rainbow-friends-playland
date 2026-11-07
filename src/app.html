@@ -298,6 +298,8 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
 .home-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:16px;width:100%;max-width:960px;flex:0 0 auto;padding-bottom:10px}
 .home-grid .mode-art{width:70%}
 .home-grid .mode{padding:14px 12px}
+.home-toggles{position:absolute;top:14px;right:0;display:flex;gap:10px;z-index:2}
+.tb-right{display:flex;gap:10px;flex:0 0 auto}
 .lv4{background:#ff6fbd;box-shadow:0 8px 0 #c93d7d}
 
 /* ---------- READING ---------- */
@@ -347,6 +349,7 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
 <div id="app">
   <!-- HOME -->
   <section class="screen" id="home">
+    <div class="home-toggles"><button class="round-btn sound-btn" aria-label="Sound on or off"></button><button class="round-btn voice-btn" aria-label="Voice on or off"></button></div>
     <h1>Rainbow Friends Playland</h1>
     <div class="rainbow-arc"><div class="hero-friends" id="heroFriends"></div></div>
     <div class="home-grid">
@@ -379,7 +382,7 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
     <div class="topbar">
       <button class="round-btn" data-go="home" aria-label="Home"><svg viewBox="0 0 24 24"><path d="M3 11 12 3l9 8v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1Z" fill="#ff5fa2"/></svg></button>
       <div class="pairs" id="pairs"></div>
-      <button class="round-btn sound-btn" aria-label="Sound on or off"></button>
+      <div class="tb-right"><button class="round-btn sound-btn" aria-label="Sound on or off"></button><button class="round-btn voice-btn" aria-label="Voice on or off"></button></div>
     </div>
     <div id="board-wrap"><div id="board"></div></div>
   </section>
@@ -407,7 +410,7 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
     <div class="topbar">
       <button class="round-btn" data-go="pzpick" aria-label="Back to puzzles"><svg viewBox="0 0 24 24"><path d="M14.5 5 7.5 12l7 7" stroke="#ff5fa2" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <h2 class="book-title" id="pzTitle">Puzzle</h2>
-      <button class="round-btn sound-btn" aria-label="Sound on or off"></button>
+      <div class="tb-right"><button class="round-btn sound-btn" aria-label="Sound on or off"></button><button class="round-btn voice-btn" aria-label="Voice on or off"></button></div>
     </div>
     <div id="pz-area"><div id="pz-board"><div class="ghost" id="pzGhost"></div><div id="pz-slots"></div></div><div id="pz-tray"></div></div>
   </section>
@@ -427,7 +430,7 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
     <div class="topbar">
       <button class="round-btn" data-go="stories" aria-label="Back to story books"><svg viewBox="0 0 24 24"><path d="M14.5 5 7.5 12l7 7" stroke="#ff5fa2" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <h2 class="book-title" id="stTitle">Story</h2>
-      <button class="round-btn sound-btn" aria-label="Sound on or off"></button>
+      <div class="tb-right"><button class="round-btn sound-btn" aria-label="Sound on or off"></button><button class="round-btn voice-btn" aria-label="Voice on or off"></button></div>
     </div>
     <div id="st-wrap"><div id="st-stage"></div></div>
     <div class="st-row">
@@ -442,7 +445,7 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
     <div class="topbar">
       <button class="round-btn" data-go="home" aria-label="Home"><svg viewBox="0 0 24 24"><path d="M3 11 12 3l9 8v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1Z" fill="#ff5fa2"/></svg></button>
       <h2 class="book-title" id="drTitle">Dress Up</h2>
-      <button class="round-btn sound-btn" aria-label="Sound on or off"></button>
+      <div class="tb-right"><button class="round-btn sound-btn" aria-label="Sound on or off"></button><button class="round-btn voice-btn" aria-label="Voice on or off"></button></div>
     </div>
     <div id="dr-area">
       <div id="dr-stage">
@@ -497,7 +500,7 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
     <div class="topbar">
       <button class="round-btn" data-go="words" aria-label="Back to word decks"><svg viewBox="0 0 24 24"><path d="M14.5 5 7.5 12l7 7" stroke="#ff5fa2" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div class="pairs" id="flProg"></div>
-      <button class="round-btn sound-btn" aria-label="Sound on or off"></button>
+      <div class="tb-right"><button class="round-btn sound-btn" aria-label="Sound on or off"></button><button class="round-btn voice-btn" aria-label="Voice on or off"></button></div>
     </div>
     <div id="fl-wrap"><div class="fl-card" id="flCard"><div class="fl-inner">
       <div class="fl-face fl-front"><div class="fl-word" id="flWord"></div></div>
@@ -695,6 +698,7 @@ function load(){try{const v=JSON.parse(localStorage.getItem(KEY)||"[]");return A
 function save(){try{localStorage.setItem(KEY,JSON.stringify(collected))}catch(e){}}
 let collected=load();
 let soundOn=true;try{soundOn=localStorage.getItem(SKEY)!=="off"}catch(e){}
+const VKEY="rainbowRescue.voice";let voiceOn=true;try{voiceOn=localStorage.getItem(VKEY)!=="off"}catch(e){}
 
 /* ---------- sound + voice ---------- */
 let ac=null;
@@ -710,7 +714,7 @@ const sfx={
   win:()=>[523,659,784,659,784,1047,1319].forEach((f,i)=>tone(f,i*.12,.4,"triangle",.16)),
   magic:()=>[784,988,1175,1568,1976].forEach((f,i)=>tone(f,i*.07,.5,"sine",.12))
 };
-function say(text,rate,force){if(!soundOn&&!force)return;try{const s=window.speechSynthesis;if(!s)return;s.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=rate||.95;u.pitch=1.25;s.speak(u)}catch(e){}}
+function say(text,rate,force){if((!soundOn||!voiceOn)&&!force)return;try{const s=window.speechSynthesis;if(!s)return;s.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=rate||.95;u.pitch=1.25;s.speak(u)}catch(e){}}
 function renderSoundBtn(){const h=soundOn
   ?`<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4Z" fill="#8b5cf6"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="#8b5cf6" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`
   :`<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4Z" fill="#b9add6"/><path d="M16 9l5 6M21 9l-5 6" stroke="#b9add6" stroke-width="2" stroke-linecap="round"/></svg>`;
@@ -741,6 +745,12 @@ document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=
 document.getElementById("btnBook").onclick=()=>{audio();sfx.flip();show("book")};
 document.getElementById("btnBookPlay").onclick=()=>{audio();sfx.flip();show("home")};
 document.querySelectorAll(".sound-btn").forEach(b=>b.onclick=()=>{soundOn=!soundOn;try{localStorage.setItem(SKEY,soundOn?"on":"off")}catch(e){}renderSoundBtn();if(soundOn){audio();sfx.flip()}else{try{speechSynthesis.cancel()}catch(e){}}});
+function renderVoiceBtn(){const h=voiceOn
+  ?`<svg viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-9l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" fill="#ff5fa2"/><path d="M7 9.5h10M7 12.5h7" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>`
+  :`<svg viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-9l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" fill="#d8cdf2"/><path d="M4 3l16 18" stroke="#b9add6" stroke-width="2.2" stroke-linecap="round"/></svg>`;
+  document.querySelectorAll(".voice-btn").forEach(b=>{b.innerHTML=h;b.setAttribute("aria-pressed",String(voiceOn))});}
+document.querySelectorAll(".voice-btn").forEach(b=>b.onclick=()=>{voiceOn=!voiceOn;try{localStorage.setItem(VKEY,voiceOn?"on":"off")}catch(e){}
+  renderVoiceBtn();audio();sfx.flip();if(voiceOn)say("Voice on!");else{try{speechSynthesis.cancel()}catch(e){}}});
 document.getElementById("btnMatch").onclick=()=>{audio();sfx.flip();say("Matching!");show("pick")};
 document.getElementById("btnPuzzle").onclick=()=>{audio();sfx.flip();say("Puzzles!");show("pzpick")};
 document.getElementById("btnStory").onclick=()=>{audio();sfx.flip();say("Stories!");show("stories")};
@@ -1441,6 +1451,6 @@ document.getElementById("artBook").innerHTML=`<svg viewBox="0 0 120 110">
   <g transform="rotate(10 82 58)"><rect x="56" y="18" width="50" height="70" rx="8" fill="#fff" stroke="#9b6bff" stroke-width="3.5"/><svg x="58" y="26" width="46" height="46" viewBox="0 0 100 100">${innerArt(UNICORNS[1])}</svg></g></svg>`;
 
 /* ---------- boot ---------- */
-renderSoundBtn();renderHome();
+renderSoundBtn();renderVoiceBtn();renderHome();
 })();
 </script>
