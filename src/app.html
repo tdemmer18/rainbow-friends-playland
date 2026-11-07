@@ -697,7 +697,7 @@ const KEY="rainbowRescue.collected",SKEY="rainbowRescue.sound";
 function load(){try{const v=JSON.parse(localStorage.getItem(KEY)||"[]");return Array.isArray(v)?v.filter(id=>BY_ID[id]):[]}catch(e){return []}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(collected))}catch(e){}}
 let collected=load();
-let soundOn=true;try{soundOn=localStorage.getItem(SKEY)!=="off"}catch(e){}
+let soundOn=false;try{soundOn=localStorage.getItem(SKEY)==="on"}catch(e){}
 const VKEY="rainbowRescue.voice";let voiceOn=true;try{voiceOn=localStorage.getItem(VKEY)!=="off"}catch(e){}
 
 /* ---------- sound + voice ---------- */
