@@ -360,6 +360,20 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
 #btnColor{--tile:#ffe6d4;--tile-edge:#f2b086}
 #btnBook{--tile:#ffffff;--tile-edge:#d8cdf2}
 @media (max-width:560px){#home .home-grid .mode{width:calc(50% - 8px)}}
+
+/* ---------- MY WORDS (grown-up editor) ---------- */
+.pop{max-height:calc(100dvh - 40px);overflow-y:auto}
+.mw-form{display:flex;flex-wrap:wrap;gap:10px;width:100%;justify-content:center}
+.mw-form input{font:inherit;font-size:20px;font-weight:800;color:var(--ink);background:var(--cloud);border:3px solid #d8cdf2;border-radius:16px;padding:10px 14px;min-width:0;flex:1 1 160px}
+.mw-form input:focus{outline:none;border-color:var(--violet)}
+.mw-form .pop-btn{flex:0 0 auto;min-height:56px;padding:8px 22px;font-size:22px}
+.mw-list{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;width:100%;max-height:34vh;overflow-y:auto}
+.mw-chip{display:inline-flex;align-items:center;gap:6px;background:var(--cloud);border-radius:999px;padding:6px 6px 6px 14px;font-family:"Andika",var(--body);font-weight:700;font-size:20px}
+.mw-chip button{width:30px;height:30px;border-radius:50%;background:#fff;color:#ff4d5e;font-weight:800;font-size:18px;line-height:1}
+.deck .dw{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mw-empty{color:var(--ink-soft);font-weight:800;margin:0}
+.gate-msg{color:#ff4d5e;font-weight:800;margin:0;min-height:1.3em}
+.small-link{font-weight:800;color:var(--ink-soft);text-decoration:underline;padding:6px}
 </style>
 
 <div class="clouds" aria-hidden="true">
@@ -514,6 +528,7 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
     <div class="scroll">
       <p class="pz-note" style="margin:0">Read the word out loud, then tap the speaker to check!</p>
       <div class="deck-grid" id="deckGrid"></div>
+      <div class="grownup"><button id="btnMyWords">Grown-ups: edit My Words</button></div>
     </div>
   </section>
 
@@ -1422,13 +1437,13 @@ const WKEY="rainbowRescue.words";
 let wordsRead={};try{const v=JSON.parse(localStorage.getItem(WKEY)||"{}");if(v&&typeof v==="object")wordsRead=v}catch(e){}
 function saveWords(){try{localStorage.setItem(WKEY,JSON.stringify(wordsRead))}catch(e){}}
 const blob=c=>`<svg viewBox="0 0 100 100"><path d="M50 8C74 6 94 26 92 50 90 76 70 94 46 92 22 90 6 72 8 48 10 26 28 10 50 8Z" fill="${c}" stroke="${c==="#ffffff"?"#c9bce8":shade(c,-.18)}" stroke-width="3"/></svg>`;
-function wordPic(card){if(card.p)return `<span>${card.p}</span>`;if(card.c)return blob(card.c);return art(ALL[Math.floor(Math.random()*ALL.length)])}
+function wordPic(card){if(card.p)return `<span>${esc(card.p)}</span>`;if(card.c)return blob(card.c);return art(ALL[Math.floor(Math.random()*ALL.length)])}
 function renderWords(){
   const g=document.getElementById("deckGrid");
-  g.innerHTML=DECKS.map(d=>{const n=(wordsRead[d.id]||[]).length,f=d.words.find(x=>x.p||x.c);
-    return `<button class="deck" data-id="${d.id}"><span class="dp">${f?wordPic(f):art(BUNNIES[1])}</span><span class="dw">${d.words.slice(0,3).map(x=>x.w).join(" ")}</span>
+  g.innerHTML=allDecks().map(d=>{const n=(wordsRead[d.id]||[]).filter(w=>d.words.some(x=>x.w===w)).length,f=d.words.find(x=>x.p||x.c);
+    return `<button class="deck" data-id="${d.id}"><span class="dp">${f?wordPic(f):art(BUNNIES[1])}</span><span class="dw">${d.words.length?esc(d.words.slice(0,3).map(x=>x.w).join(" ")):"Add words!"}</span>
       <span class="dn" style="background:${d.tint}">${d.name}</span><span class="dc">${starSVG}${n} of ${d.words.length} words read</span></button>`}).join("");
-  g.querySelectorAll(".deck").forEach(b=>b.onclick=()=>{audio();sfx.flip();startDeck(DECKS.find(d=>d.id===b.dataset.id))});
+  g.querySelectorAll(".deck").forEach(b=>b.onclick=()=>{audio();sfx.flip();const d=allDecks().find(d=>d.id===b.dataset.id);if(!d.words.length){toast("Ask a grown-up to add words to My Words.");say("Ask a grown-up to add some words!");return}startDeck(d)});
 }
 const flCard=document.getElementById("flCard"),flWord=document.getElementById("flWord"),flPic=document.getElementById("flPic"),flWord2=document.getElementById("flWord2"),flProg=document.getElementById("flProg");
 const flBtn=id=>document.getElementById(id);
@@ -1438,7 +1453,8 @@ function startDeck(d){flDeck=d;flCards=shuffle(d.words).slice(0,8);flIdx=0;flGot
   flProg.innerHTML=flCards.map(()=>`<i>${starOff}</i>`).join("");renderSoundBtn();show("flash");showCard(true)}
 function showCard(first){
   const card=flCards[flIdx];flTimers.forEach(clearTimeout);flTimers=[];
-  flCard.classList.remove("flip");flWord.innerHTML=[...card.w].map(ch=>`<span>${ch}</span>`).join("");flState(false);
+  flCard.classList.remove("flip");flWord.innerHTML=[...card.w].map(ch=>`<span>${ch===" "?"&nbsp;":esc(ch)}</span>`).join("");flState(false);
+  const L=[...card.w].length;flWord.style.fontSize=`clamp(36px,${Math.min(13,60/L)}vw,${Math.min(150,900/L)}px)`;flWord2.style.fontSize=`clamp(26px,${Math.min(7,36/L)}vw,${Math.min(84,520/L)}px)`;
   const setBack=()=>{flPic.innerHTML=wordPic(card);flWord2.textContent=card.w;const se=document.getElementById("flSent");se.textContent=card.s||"";se.hidden=!card.s};
   if(first)setBack();else setTimeout(setBack,350);
 }
@@ -1471,6 +1487,52 @@ document.getElementById("artRead").innerHTML=`<svg viewBox="0 0 120 110"><rect x
 document.getElementById("artBook").innerHTML=`<svg viewBox="0 0 120 110">
   <g transform="rotate(-12 40 58)"><rect x="14" y="18" width="50" height="70" rx="8" fill="#fff" stroke="#ff5fa2" stroke-width="3.5"/><svg x="16" y="26" width="46" height="46" viewBox="0 0 100 100">${innerArt(BUNNIES[1])}</svg></g>
   <g transform="rotate(10 82 58)"><rect x="56" y="18" width="50" height="70" rx="8" fill="#fff" stroke="#9b6bff" stroke-width="3.5"/><svg x="58" y="26" width="46" height="46" viewBox="0 0 100 100">${innerArt(UNICORNS[1])}</svg></g></svg>`;
+
+/* ---------- my words (typed in by a grown-up) ---------- */
+const MYKEY="rainbowRescue.mywords";
+let myWords=[];try{const v=JSON.parse(localStorage.getItem(MYKEY)||"[]");if(Array.isArray(v))myWords=v.filter(x=>x&&typeof x.w==="string")}catch(e){}
+function saveMyWords(){try{localStorage.setItem(MYKEY,JSON.stringify(myWords))}catch(e){}}
+function esc(t){return String(t).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
+function allDecks(){return [{id:"mine",name:"My Words",tint:"#ff8a1f",words:myWords},...DECKS]}
+function parentGate(onPass){
+  const a=2+Math.floor(Math.random()*8),b=2+Math.floor(Math.random()*8);
+  const p=openOverlay(`<h2>Grown-ups only</h2><p class="hint">What is ${a} + ${b}?</p>
+    <form class="mw-form" id="gateForm"><input id="gateAns" type="number" inputmode="numeric" autocomplete="off" aria-label="Answer"><button class="pop-btn" type="submit">Go</button></form>
+    <p class="gate-msg" id="gateMsg"></p><button class="small-link" id="gateCancel">Cancel</button>`);
+  const inp=p.querySelector("#gateAns");setTimeout(()=>inp.focus(),50);
+  p.querySelector("#gateCancel").onclick=closeOverlay;
+  p.querySelector("#gateForm").onsubmit=e=>{e.preventDefault();
+    if(+inp.value===a+b)onPass();else{p.querySelector("#gateMsg").textContent="That’s not it. Try again.";inp.value="";inp.focus()}};
+}
+function openWordEditor(){
+  const p=openOverlay(`<h2>My Words</h2><p class="hint" style="font-size:17px">Type a word to practice. Add a picture emoji if you like. Use commas to add several words at once.</p>
+    <form class="mw-form" id="mwForm"><input id="mwWord" placeholder="Word, like “jump”" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="200" aria-label="Word">
+      <input id="mwPic" placeholder="Picture 🐸" maxlength="12" autocomplete="off" aria-label="Picture emoji, optional" style="flex:0 1 130px">
+      <button class="pop-btn" type="submit">Add</button></form>
+    <div class="mw-list" id="mwList"></div>
+    <div class="pop-row"><button class="pop-btn alt" id="mwDone">Done</button></div>
+    <div id="mwClearWrap"></div>`);
+  const list=p.querySelector("#mwList"),wIn=p.querySelector("#mwWord"),pIn=p.querySelector("#mwPic"),clearWrap=p.querySelector("#mwClearWrap");
+  let confirming=false;
+  const draw=()=>{
+    list.innerHTML="";
+    if(!myWords.length){const e=document.createElement("p");e.className="mw-empty";e.textContent="No words yet.";list.appendChild(e)}
+    myWords.forEach((x,i)=>{const c=document.createElement("span");c.className="mw-chip";c.textContent=(x.p?x.p+" ":"")+x.w;
+      const b=document.createElement("button");b.type="button";b.textContent="✕";b.setAttribute("aria-label","Remove "+x.w);
+      b.onclick=()=>{myWords.splice(i,1);saveMyWords();draw()};c.appendChild(b);list.appendChild(c)});
+    clearWrap.innerHTML="";
+    if(myWords.length){const b=document.createElement("button");b.className="small-link";
+      b.textContent=confirming?"Tap again to remove all words":"Remove all words";
+      b.onclick=()=>{if(!confirming){confirming=true;draw();return}myWords=[];confirming=false;saveMyWords();draw()};clearWrap.appendChild(b)}
+  };
+  p.querySelector("#mwForm").onsubmit=e=>{e.preventDefault();
+    const parts=wIn.value.split(/[,\n]+/).map(t=>t.trim().replace(/\s+/g," ").slice(0,24)).filter(Boolean),pic=pIn.value.trim();
+    parts.forEach(w=>{if(!myWords.some(x=>x.w.toLowerCase()===w.toLowerCase()))myWords.push(parts.length===1&&pic?{w,p:pic}:{w})});
+    saveMyWords();wIn.value="";pIn.value="";confirming=false;draw();wIn.focus()};
+  p.querySelector("#mwDone").onclick=()=>{closeOverlay();renderWords()};
+  draw();setTimeout(()=>wIn.focus(),50);
+}
+document.getElementById("btnMyWords").onclick=()=>{audio();parentGate(openWordEditor)};
 
 /* ---------- boot ---------- */
 renderSoundBtn();renderVoiceBtn();renderHome();
