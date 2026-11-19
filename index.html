@@ -387,6 +387,29 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
 #btnBook{--tile:#ffffff;--tile-edge:#d8cdf2}
 @media (max-width:560px){#home .home-grid .mode{width:calc(50% - 8px)}}
 
+/* ---------- BLOCKS ---------- */
+#btnBlocks{--tile:#d6f5f5;--tile-edge:#86d3d3}
+#bl-area{flex:1 1 auto;min-height:0;display:flex;gap:18px}
+#bl-board-wrap{position:relative;flex:1 1 auto;min-width:0;min-height:0}
+#blBoard{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:block;border-radius:14px;box-shadow:0 6px 0 rgba(59,42,99,.14);background:#fff;touch-action:none;-webkit-touch-callout:none;cursor:crosshair}
+#blBoard.erasing{box-shadow:0 0 0 5px #ffb3bd,0 6px 0 rgba(59,42,99,.14)}
+#bl-panel{flex:0 0 min(36%,380px);min-height:0;display:flex;flex-direction:column;gap:18px;background:var(--paper);border-radius:28px;padding:16px 14px 12px;box-shadow:0 6px 0 rgba(59,42,99,.12);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.bl-colors{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.bl-sw{width:100%;max-width:60px;aspect-ratio:1;justify-self:center;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #e4dcf6;transition:transform .12s}
+.bl-sw.sel{box-shadow:0 0 0 3px #fff,0 0 0 7px var(--violet);transform:scale(1.06)}
+.bl-styles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.bl-st{width:100%;max-width:84px;aspect-ratio:1;justify-self:center;border-radius:18px;background:var(--cloud);border:4px solid transparent;padding:12px;display:grid;place-items:center}
+.bl-st.sel{background:linear-gradient(#fff6c2,#fff6c2) padding-box,var(--rainbow) border-box}
+.bl-st svg{width:100%;height:100%;display:block;overflow:visible}
+.bl-tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:auto}
+.bl-tool{font-family:var(--display);font-weight:600;font-size:16px;background:var(--cloud);border-radius:18px;min-height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:4px solid transparent;padding:4px}
+.bl-tool svg{width:30px;height:30px}
+.bl-tool.sel{background:linear-gradient(#fff6c2,#fff6c2) padding-box,var(--rainbow) border-box}
+.bl-tool:disabled{opacity:.4}
+.bl-tool.warn{background:#ffe1e4;color:#d6304a}
+@media (orientation:portrait){#bl-area{flex-direction:column}#bl-panel{flex:0 0 auto;max-height:46%}
+  .bl-colors,.bl-styles{grid-template-columns:repeat(8,minmax(0,1fr))}.bl-st{padding:8px}}
+
 /* ---------- MY WORDS (grown-up editor) ---------- */
 .pop{max-height:calc(100dvh - 40px);overflow-y:auto}
 .mw-form{display:flex;flex-wrap:wrap;gap:10px;width:100%;justify-content:center}
@@ -422,6 +445,7 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
       <button class="mode" id="btnRead"><span class="mode-art" id="artRead"></span>Reading</button>
       <button class="mode" id="btnDress"><span class="mode-art" id="artDress"></span>Dress Up</button>
       <button class="mode" id="btnColor"><span class="mode-art" id="artColor"></span>Coloring</button>
+      <button class="mode" id="btnBlocks"><span class="mode-art" id="artBlocks"></span>Blocks</button>
       <button class="mode" id="btnBook"><span class="mode-art" id="artBook"></span><span>Card Book <span class="book-count" id="homeCount">0/32</span></span></button>
     </div>
   </section>
@@ -544,6 +568,28 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
       <button class="print-btn" id="coPrint"><svg viewBox="0 0 24 24"><path d="M7 3h10v5H7Z" fill="#fff"/><rect x="3" y="8" width="18" height="9" rx="2" fill="#fff"/><path d="M7 14h10v7H7Z" fill="#fff" stroke="#3fc36f" stroke-width="1.6"/><circle cx="17.5" cy="11" r="1" fill="#3fc36f"/></svg><span>Print</span></button>
     </div>
     <div id="co-area"><div id="co-art"></div><div id="co-pal"></div></div>
+  </section>
+
+  <!-- BLOCKS -->
+  <section class="screen" id="blocks" hidden>
+    <div class="topbar">
+      <button class="round-btn" data-go="home" aria-label="Home"><svg viewBox="0 0 24 24"><path d="M3 11 12 3l9 8v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1Z" fill="#ff5fa2"/></svg></button>
+      <h2 class="book-title">Blocks</h2>
+      <div class="tb-right"><button class="round-btn sound-btn" aria-label="Sound on or off"></button><button class="round-btn voice-btn" aria-label="Voice on or off"></button></div>
+    </div>
+    <div id="bl-area">
+      <div id="bl-board-wrap"><svg id="blBoard" viewBox="0 0 160 120" role="img" aria-label="Drawing board"></svg></div>
+      <div id="bl-panel">
+        <div class="bl-colors" id="blColors"></div>
+        <div class="bl-styles" id="blStyles"></div>
+        <div class="bl-tools">
+          <button class="bl-tool" id="blDraw" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M15.5 4.5l4 4L9 19l-5 1 1-5Z" fill="#3b9dff"/><path d="M15.5 4.5l2-2 4 4-2 2Z" fill="#ff5fa2"/><path d="M5 15l4 4-5 1Z" fill="#ffe0bf"/></svg>Draw</button>
+          <button class="bl-tool" id="blErase" aria-pressed="false"><svg viewBox="0 0 24 24"><g transform="rotate(-40 12 12)"><rect x="3" y="7.5" width="18" height="9" rx="2.5" fill="#ff8fc8"/><rect x="3" y="7.5" width="7" height="9" rx="2.5" fill="#fff" stroke="#ff8fc8" stroke-width="1.6"/></g></svg>Erase</button>
+          <button class="bl-tool" id="blUndo"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5" stroke="#9b6bff" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10a6 6 0 0 1 0 12h-3" stroke="#9b6bff" stroke-width="2.8" fill="none" stroke-linecap="round"/></svg>Undo</button>
+          <button class="bl-tool" id="blClear"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" stroke="#ff5e6c" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Clear</span></button>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- READING DECKS -->
@@ -1663,8 +1709,8 @@ function tick(){cx.clearRect(0,0,innerWidth,innerHeight);
   if(parts.length)raf=requestAnimationFrame(tick);else{raf=0;cv.hidden=true}}
 
 /* ---------- navigation ---------- */
-const screens=["home","pick","game","pzpick","puzzle","stories","story","dress","colorpick","color","words","flash","book"];
-function show(id){screens.forEach(s=>document.getElementById(s).hidden=s!==id);if(id==="home")renderHome();if(id==="book")renderBook();if(id==="game")layout();if(id==="pzpick")renderPzPick();if(id==="puzzle")pzLayout();if(id==="stories")renderShelf();if(id==="story")stLayout();if(id==="dress")renderDress();if(id==="colorpick")renderColorPick();if(id==="words")renderWords();}
+const screens=["home","pick","game","pzpick","puzzle","stories","story","dress","colorpick","color","words","flash","book","blocks"];
+function show(id){screens.forEach(s=>document.getElementById(s).hidden=s!==id);if(id==="home")renderHome();if(id==="book")renderBook();if(id==="game")layout();if(id==="pzpick")renderPzPick();if(id==="puzzle")pzLayout();if(id==="stories")renderShelf();if(id==="story")stLayout();if(id==="dress")renderDress();if(id==="colorpick")renderColorPick();if(id==="words")renderWords();if(id==="blocks")renderBlocks();}
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>{audio();show(b.dataset.go)}));
 document.getElementById("btnBook").onclick=()=>{audio();sfx.flip();show("book")};
 document.getElementById("btnBookPlay").onclick=()=>{audio();sfx.flip();show("home")};
@@ -2444,6 +2490,91 @@ function openWordEditor(){
   draw();setTimeout(()=>wIn.focus(),50);
 }
 document.getElementById("btnMyWords").onclick=()=>{audio();parentGate(openWordEditor)};
+
+/* ---------- blocks (draw on a grid) ---------- */
+const BL_COLS=16,BL_ROWS=12,BL_KEY="rainbowRescue.blocks";
+const BL_COLORS=[["#ff4d5e","Red"],["#ff8a1f","Orange"],["#ffd83b","Yellow"],["#5fd36b","Green"],["#3b9dff","Blue"],["#9b6bff","Purple"],["#ff6fbd","Pink"],["rainbow","Rainbow"]];
+const BL_RAIN=["#ff5e6c","#ffa53b","#ffd83b","#5fd36b","#3bb4ff","#9b6bff"];
+const BL_STYLES=[["square","Squares"],["rounded","Rounded"],["circle","Circles"],["star","Stars"],["heart","Hearts"],["diamond","Diamonds"],["flower","Flowers"],["brick","Bricks"]];
+function blMix(hex,t){const n=parseInt(hex.slice(1),16),m=t>0?255:0,a=Math.abs(t);
+  const f=v=>Math.round(v+(m-v)*a);return "#"+((1<<24)|(f(n>>16)<<16)|(f(n>>8&255)<<8)|f(n&255)).toString(16).slice(1)}
+function blCol(c,x,y){return c==="rainbow"?BL_RAIN[((x+y)%6+6)%6]:c}
+const BL_STAR=(()=>{let p="";for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=i%2?2.15:5;p+=(i?"L":"M")+(5+Math.cos(a)*r).toFixed(2)+" "+(5.45+Math.sin(a)*r).toFixed(2)}return p+"Z"})();
+const BL_HEART="M5 9.3C.5 6.3-.1 3.6 1.3 2c1.4-1.6 3.2-1 3.7.6.5-1.6 2.3-2.2 3.7-.6 1.4 1.6.8 4.3-3.7 7.3Z";
+const BL_PETALS=[0,1,2,3,4].map(i=>{const a=-Math.PI/2+i*2*Math.PI/5;return [5+Math.cos(a)*2.55,5.2+Math.sin(a)*2.55]});
+function blCell(x,y,c,st){const X=x*10,Y=y*10,d=v=>blMix(c,v),T=`transform="translate(${X} ${Y})"`;
+  switch(st){
+    case "rounded":return `<rect x="${X+.6}" y="${Y+.6}" width="8.8" height="8.8" rx="2.8" fill="${c}" stroke="${d(-.28)}" stroke-width=".7"/><ellipse cx="${X+3.6}" cy="${Y+3.1}" rx="2.2" ry="1.3" fill="#fff" opacity=".6" transform="rotate(-30 ${X+3.6} ${Y+3.1})"/>`;
+    case "circle":return `<circle cx="${X+5}" cy="${Y+5}" r="4.4" fill="${c}" stroke="${d(-.28)}" stroke-width=".7"/><ellipse cx="${X+3.5}" cy="${Y+3.3}" rx="1.6" ry="1" fill="#fff" opacity=".6" transform="rotate(-35 ${X+3.5} ${Y+3.3})"/>`;
+    case "star":return `<path d="${BL_STAR}" ${T} fill="${c}" stroke="${d(-.3)}" stroke-width=".6" stroke-linejoin="round"/><circle cx="${X+4}" cy="${Y+4.4}" r=".8" fill="#fff" opacity=".7"/>`;
+    case "heart":return `<path d="${BL_HEART}" ${T} fill="${c}" stroke="${d(-.3)}" stroke-width=".6"/><ellipse cx="${X+2.8}" cy="${Y+3.4}" rx="1.1" ry=".7" fill="#fff" opacity=".65" transform="rotate(-40 ${X+2.8} ${Y+3.4})"/>`;
+    case "diamond":return `<path d="M5 .4 9.6 5 5 9.6.4 5Z" ${T} fill="${c}" stroke="${d(-.3)}" stroke-width=".6" stroke-linejoin="round"/><path d="M5 .9 9 5H1Z" ${T} fill="#fff" opacity=".28"/><path d="M5 2.6 7.4 5 5 7.4 2.6 5Z" ${T} fill="${d(.25)}"/>`;
+    case "flower":return BL_PETALS.map(([px,py])=>`<circle cx="${X+px}" cy="${Y+py}" r="2.25" fill="${c}" stroke="${d(-.28)}" stroke-width=".5"/>`).join("")+`<circle cx="${X+5}" cy="${Y+5.2}" r="1.7" fill="${c==="#ffd83b"?"#ff8a1f":"#ffe066"}" stroke="${d(-.28)}" stroke-width=".4"/>`;
+    case "brick":return `<rect x="${X+.3}" y="${Y+.3}" width="9.4" height="9.4" rx=".9" fill="${c}" stroke="${d(-.3)}" stroke-width=".6"/><circle cx="${X+5}" cy="${Y+5.5}" r="2.7" fill="${d(-.22)}"/><circle cx="${X+5}" cy="${Y+4.9}" r="2.7" fill="${d(.08)}" stroke="${d(-.25)}" stroke-width=".4"/><path d="M${X+3.4} ${Y+4.3}a1.8 1.8 0 0 1 1.6-1.2" stroke="#fff" stroke-width=".6" fill="none" stroke-linecap="round" opacity=".75"/>`;
+    default:{const b=1.7;return `<polygon points="${X},${Y} ${X+10},${Y} ${X+10-b},${Y+b} ${X+b},${Y+b}" fill="${d(.45)}"/><polygon points="${X},${Y} ${X+b},${Y+b} ${X+b},${Y+10-b} ${X},${Y+10}" fill="${d(.25)}"/><polygon points="${X+10},${Y} ${X+10},${Y+10} ${X+10-b},${Y+10-b} ${X+10-b},${Y+b}" fill="${d(-.2)}"/><polygon points="${X},${Y+10} ${X+b},${Y+10-b} ${X+10-b},${Y+10-b} ${X+10},${Y+10}" fill="${d(-.38)}"/><rect x="${X+b}" y="${Y+b}" width="${10-2*b}" height="${10-2*b}" fill="${c}"/><rect x="${X+.2}" y="${Y+.2}" width="9.6" height="9.6" fill="none" stroke="${d(-.45)}" stroke-width=".4"/>`}
+  }}
+
+/* cells: {"x,y":[color,style]} */
+let blCells={},blColor="#ff4d5e",blStyle="square",blTool="draw",blHist=[],blCS=40,blStroke=null;
+const blIsColor=c=>BL_COLORS.some(x=>x[0]===c),blIsStyle=s=>BL_STYLES.some(x=>x[0]===s);
+try{const v=JSON.parse(localStorage.getItem(BL_KEY)||"null"),old={classic:"square",jelly:"rounded"};
+  if(v&&typeof v==="object"){
+    const put=(x,y,c,s)=>{s=old[s]||s;if(Number.isInteger(x)&&Number.isInteger(y)&&x>=0&&y>=0&&x<BL_COLS&&y<BL_ROWS&&typeof c==="string")blCells[x+","+y]=[blIsColor(c)?c:"#ff4d5e",blIsStyle(s)?s:"square"]};
+    if(v.cells&&typeof v.cells==="object")Object.entries(v.cells).forEach(([k,a])=>{const [x,y]=k.split(",").map(Number);if(Array.isArray(a))put(x,y,a[0],a[1])});
+    else if(Array.isArray(v.pieces))v.pieces.forEach(p=>p&&Array.isArray(p.cells)&&p.cells.forEach(c=>Array.isArray(c)&&put(p.x+c[0],p.y+c[1],p.color,p.style)));
+    if(blIsColor(v.color))blColor=v.color;
+    blStyle=old[v.style]||v.style;if(!blIsStyle(blStyle))blStyle="square";}}catch(e){}
+function blSave(){try{localStorage.setItem(BL_KEY,JSON.stringify({cells:blCells,color:blColor,style:blStyle}))}catch(e){}}
+function blPush(){blHist.push(JSON.stringify(blCells));if(blHist.length>80)blHist.shift()}
+const blBoard=document.getElementById("blBoard");
+let blGrid="";for(let x=1;x<BL_COLS;x++)blGrid+=`M${x*10} 0V${BL_ROWS*10}`;for(let y=1;y<BL_ROWS;y++)blGrid+=`M0 ${y*10}H${BL_COLS*10}`;
+function blRenderBoard(){
+  blBoard.innerHTML=`<rect width="${BL_COLS*10}" height="${BL_ROWS*10}" fill="#fff"/><path d="${blGrid}" stroke="#ece6fa" stroke-width=".35"/>`+
+    Object.entries(blCells).map(([k,[c,s]])=>{const [x,y]=k.split(",").map(Number);return blCell(x,y,blCol(c,x,y),s)}).join("")}
+function blLayout(){const r=document.getElementById("bl-board-wrap").getBoundingClientRect();
+  blCS=Math.max(10,Math.floor(Math.min(r.width/BL_COLS,r.height/BL_ROWS)));
+  blBoard.style.width=blCS*BL_COLS+"px";blBoard.style.height=blCS*BL_ROWS+"px"}
+function blRenderPanel(){
+  document.getElementById("blColors").innerHTML=BL_COLORS.map(([c,n])=>`<button class="bl-sw${c===blColor?" sel":""}" data-c="${c}" aria-label="${n}" style="background:${c==="rainbow"?"conic-gradient(#ff5e6c,#ffa53b,#ffd83b,#5fd36b,#3bb4ff,#9b6bff,#ff5e6c)":c}"></button>`).join("");
+  document.getElementById("blStyles").innerHTML=BL_STYLES.map(([s,n])=>`<button class="bl-st${s===blStyle?" sel":""}" data-s="${s}" aria-label="${n}"><svg viewBox="0 0 10 10" aria-hidden="true">${blCell(0,0,blCol(blColor,0,0),s)}</svg></button>`).join("");
+  blRenderTools()}
+let blClearArm=0;
+function blRenderTools(){
+  [["blDraw","draw"],["blErase","erase"]].forEach(([id,t])=>{const b=document.getElementById(id);b.classList.toggle("sel",blTool===t);b.setAttribute("aria-pressed",blTool===t)});
+  blBoard.classList.toggle("erasing",blTool==="erase");
+  document.getElementById("blUndo").disabled=!blHist.length;
+  const c=document.getElementById("blClear"),empty=!Object.keys(blCells).length;c.disabled=empty&&!blClearArm;c.classList.toggle("warn",!!blClearArm);
+  c.querySelector("span").textContent=blClearArm?"Sure?":"Clear"}
+function renderBlocks(){blRenderPanel();blLayout();blRenderBoard()}
+function blChanged(){blSave();blRenderBoard();blRenderTools()}
+
+document.getElementById("btnBlocks").onclick=()=>{audio();sfx.flip();say("Blocks!");show("blocks")};
+document.getElementById("blColors").onclick=e=>{const b=e.target.closest(".bl-sw");if(!b)return;audio();sfx.flip();blColor=b.dataset.c;blTool="draw";say(b.getAttribute("aria-label"));blSave();blRenderPanel()};
+document.getElementById("blStyles").onclick=e=>{const b=e.target.closest(".bl-st");if(!b)return;audio();sfx.flip();blStyle=b.dataset.s;blTool="draw";say(b.getAttribute("aria-label"));blSave();blRenderPanel()};
+document.getElementById("blDraw").onclick=()=>{audio();sfx.flip();blTool="draw";blRenderTools()};
+document.getElementById("blErase").onclick=()=>{audio();sfx.flip();blTool="erase";blRenderTools();say("Erase!")};
+document.getElementById("blUndo").onclick=()=>{if(!blHist.length)return;audio();sfx.flip();blCells=JSON.parse(blHist.pop());blChanged()};
+document.getElementById("blClear").onclick=()=>{audio();
+  if(!blClearArm){if(!Object.keys(blCells).length)return;sfx.flip();blClearArm=setTimeout(()=>{blClearArm=0;blRenderTools()},3000);blRenderTools();return}
+  clearTimeout(blClearArm);blClearArm=0;blPush();blCells={};tone(520,0,.12,"sine",.1);tone(330,.08,.2,"sine",.1);blChanged()};
+
+function blStrokeAt(cx,cy){const st=blStroke,br=blBoard.getBoundingClientRect(),x=Math.floor((cx-br.left)/blCS),y=Math.floor((cy-br.top)/blCS);
+  const [lx,ly]=st.last||[x,y],n=Math.max(Math.abs(x-lx),Math.abs(y-ly));let changed=0;
+  for(let i=0;i<=n;i++){const X=Math.round(lx+(x-lx)*(n?i/n:1)),Y=Math.round(ly+(y-ly)*(n?i/n:1)),k=X+","+Y,cur=blCells[k];
+    if(X<0||Y<0||X>=BL_COLS||Y>=BL_ROWS)continue;
+    if(blTool==="erase"?!cur:(cur&&cur[0]===blColor&&cur[1]===blStyle))continue;
+    if(!st.did){blPush();st.did=true}
+    if(blTool==="erase")delete blCells[k];else blCells[k]=[blColor,blStyle];changed++}
+  st.last=[x,y];
+  if(changed){st.n+=changed;if(blTool==="erase")tone(300,0,.06,"sine",.08);else tone(500+(st.n*30)%600,0,.07,"triangle",.08);blRenderBoard()}}
+blBoard.addEventListener("pointerdown",e=>{if(blStroke)return;e.preventDefault();audio();blStroke={pid:e.pointerId,last:null,did:false,n:0};blStrokeAt(e.clientX,e.clientY)});
+addEventListener("pointermove",e=>{if(blStroke&&e.pointerId===blStroke.pid)blStrokeAt(e.clientX,e.clientY)});
+function blEnd(e){if(!blStroke||e.pointerId!==blStroke.pid)return;const did=blStroke.did;blStroke=null;if(did){blSave();blRenderTools()}}
+addEventListener("pointerup",blEnd);addEventListener("pointercancel",blEnd);
+addEventListener("resize",()=>{if(!document.getElementById("blocks").hidden)blLayout()});
+(function(){const C=[["#ff6fbd","heart"],["#ffd83b","star"],["#3b9dff","circle"],["#9b6bff","diamond"]],g=[
+  "0123","1230","2301","3012"];
+  document.getElementById("artBlocks").innerHTML=`<svg viewBox="0 0 120 110"><g transform="translate(13 6) scale(2.35)">${g.map((r,y)=>[...r].map((i,x)=>blCell(x,y,...C[+i])).join("")).join("")}</g></svg>`})();
 
 /* ---------- boot ---------- */
 renderSoundBtn();renderVoiceBtn();renderHome();
