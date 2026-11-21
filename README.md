@@ -1,6 +1,6 @@
 # Rainbow Friends Playland
 
-A rainbow game app for kids, made for the iPad: matching, puzzles, find-it story books, reading flashcards, dress up, printable coloring pages and a block builder, with 32 animal friends to collect.
+A rainbow game app for kids, made for the iPad: matching, puzzles, find-it story books, reading flashcards, dress up, printable coloring pages, a block builder and Rescue Pups missions (20 missions in 5 areas), with 32 animal friends to collect.
 
 Play it: https://tdemmer18.github.io/rainbow-friends-playland/
 
