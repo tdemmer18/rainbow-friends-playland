@@ -438,6 +438,18 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
 #pm-wrap{position:relative;flex:1 1 auto;min-height:0}
 #pmStage{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:block;border-radius:22px;box-shadow:0 6px 0 rgba(59,42,99,.16);touch-action:none;-webkit-touch-callout:none;overflow:hidden}
 #pmStage *{pointer-events:none}
+#pmPad{position:absolute;left:12px;bottom:12px;width:clamp(150px,min(21vw,30vh),210px);aspect-ratio:1;border-radius:50%;background:rgba(255,255,255,.55);box-shadow:0 5px 0 rgba(59,42,99,.18),inset 0 0 0 4px rgba(255,255,255,.9);touch-action:none;-webkit-touch-callout:none;z-index:2}
+.pm-arw{position:absolute;width:34%;height:34%;border-radius:22px;background:#fff;box-shadow:0 4px 0 #d8cdf2;display:grid;place-items:center;pointer-events:none;transition:transform .08s}
+.pm-arw::after{content:"";width:0;height:0;border:13px solid transparent;border-bottom:18px solid #ff5fa2;margin-top:-14px}
+.pm-arw.u{left:33%;top:2%}.pm-arw.d{left:33%;bottom:2%}.pm-arw.l{left:2%;top:33%}.pm-arw.r{right:2%;top:33%}
+.pm-arw.r::after{transform:rotate(90deg)}.pm-arw.d::after{transform:rotate(180deg)}.pm-arw.l::after{transform:rotate(-90deg)}
+.pm-dot{position:absolute;left:41%;top:41%;width:18%;height:18%;border-radius:50%;background:#fff;opacity:.8;pointer-events:none}
+#pmPad[data-dir~="u"] .u,#pmPad[data-dir="ul"] .u,#pmPad[data-dir="ur"] .u,#pmPad[data-dir="d"] .d,#pmPad[data-dir="dl"] .d,#pmPad[data-dir="dr"] .d,
+#pmPad[data-dir="l"] .l,#pmPad[data-dir="ul"] .l,#pmPad[data-dir="dl"] .l,#pmPad[data-dir="r"] .r,#pmPad[data-dir="ur"] .r,#pmPad[data-dir="dr"] .r{background:#fff6c2;transform:translateY(3px) scale(.96);box-shadow:0 1px 0 #d8cdf2}
+.pm-oops{animation:pmoops .5s ease-in-out;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes pmoops{20%{rotate:-14deg}45%{rotate:12deg}70%{rotate:-6deg}}
+.pm-flap{animation:pmflap .3s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes pmflap{to{transform:scaleY(.4)}}
 .pm-fire{animation:pmflick .45s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
 @keyframes pmflick{to{transform:scale(1.1,.9)}}
 .pm-rotor{animation:pmspin .22s linear infinite;transform-box:fill-box;transform-origin:center}
@@ -668,7 +680,8 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
       <h2 id="pmTitle"></h2>
       <div class="pm-pips" id="pmPips"></div>
     </div>
-    <div id="pm-wrap"><svg id="pmStage" viewBox="0 0 200 125" role="img" aria-label="Mission"></svg></div>
+    <div id="pm-wrap"><svg id="pmStage" viewBox="0 0 200 125" role="img" aria-label="Mission"></svg>
+      <div id="pmPad" role="group" aria-label="Direction pad"><span class="pm-arw u"></span><span class="pm-arw r"></span><span class="pm-arw d"></span><span class="pm-arw l"></span><span class="pm-dot"></span></div></div>
   </section>
 
   <!-- READING DECKS -->
@@ -2711,20 +2724,40 @@ const SP={
   burrow:()=>`<ellipse cx="0" cy="2" rx="14" ry="8" fill="#8a5a33"/><ellipse cx="0" cy="3" rx="7" ry="4.4" fill="#3b2a1f"/>`+pmBlob([[-12,-2,3],[12,-2,3]],"#5fc46a"),
   log:()=>`<rect x="-12" y="-3.4" width="24" height="7" rx="3" fill="#a8743f"/><ellipse cx="12" cy="0" rx="2.6" ry="3.5" fill="#e0ac73"/><ellipse cx="12" cy="0" rx="1.2" ry="1.6" fill="none" stroke="#a8743f" stroke-width=".6"/><path d="M-8 -1h8M-4 1.6h10" stroke="#8a5a33" stroke-width=".6"/>`,
   cone:()=>`<path d="M-4 5 L-1.2 -6 H1.2 L4 5Z" fill="#ff8a1f"/><path d="M-2.6 -.6 H2.6" stroke="#fff" stroke-width="1.4"/><rect x="-5.4" y="4.4" width="10.8" height="2.2" rx="1" fill="#ff8a1f"/>`,
+  car:(i=0)=>{const c=["#ff6fbd","#3bb4ff","#ffd83b","#5fd36b"][i%4];return `<path d="M-10 3 V-1.6 Q-10 -4 -7 -4 H-4.6 L-2.6 -8 H4 L6.4 -4 H8 Q10.4 -4 10.4 -1 V3Z" fill="${c}"/><path d="M-1.8 -6.8 H1 V-4.2 H-3.2Z M2.4 -6.8 H3.6 L5 -4.2 H2.4Z" fill="#bfe6ff"/>`+`<circle cx="-5.4" cy="3.4" r="2.6" fill="${INK}"/><circle cx="6" cy="3.4" r="2.6" fill="${INK}"/>`},
+  cow:()=>`<path d="M-5 3v4M4 3v4" stroke-width="1.3"/><ellipse cx="0" cy="0" rx="8" ry="5" fill="#fff"/><ellipse cx="-2" cy="-1" rx="2.4" ry="1.8" fill="#3b3557" stroke="none"/><ellipse cx="3.6" cy="1.6" rx="1.8" ry="1.4" fill="#3b3557" stroke="none"/><ellipse cx="9" cy="-3" rx="3.4" ry="3" fill="#fff"/><ellipse cx="10.6" cy="-1.6" rx="2" ry="1.4" fill="#ffc6d6"/><circle cx="8.6" cy="-4" r=".55" fill="${INK}" stroke="none"/><path d="M7 -5.6 l-1 -2 M10 -5.8 l1 -2" stroke-width=".8"/>`,
+  crab:()=>`<path d="M-5 2 l-3 3 M-3 3 l-2 3 M5 2 l3 3 M3 3 l2 3" stroke-width=".8"/><ellipse cx="0" cy="0" rx="6" ry="4" fill="#ff5e6c"/><circle cx="-8" cy="-4" r="2.4" fill="#ff5e6c"/><circle cx="8" cy="-4" r="2.4" fill="#ff5e6c"/><path d="M-2 -3.4 v-2.4 M2 -3.4 v-2.4" stroke-width=".7"/><circle cx="-2" cy="-6" r="1" fill="#fff"/><circle cx="2" cy="-6" r="1" fill="#fff"/>`,
+  jelly:()=>`<path d="M-4 1 q-1 4 0 7 M-1.4 1 q1 4 0 7 M1.4 1 q-1 4 0 7 M4 1 q1 4 0 7" fill="none" stroke="#ff8fc8" stroke-width=".9"/><path d="M-6 1.4 Q-6 -6 0 -6 Q6 -6 6 1.4Z" fill="#ffb3dc"/>`+pmEyes(-2,1.6,.55),
+  snowball:()=>`<circle r="6.4" fill="#fff"/><path d="M-4 -2 q4 2 8 -1 M-4.6 2 q4 2 9 0" fill="none" stroke="#bfd3ef" stroke-width=".8"/>`,
+  bat:()=>`<g class="pm-flap"><path d="M0 0 Q-5 -7 -11 -3 Q-8 -1 -8 2 Q-5 0 -3 2Z M0 0 Q5 -7 11 -3 Q8 -1 8 2 Q5 0 3 2Z" fill="#7a63b8"/></g><circle r="3" fill="#7a63b8"/><path d="M-2 -2 l-.6 -2 l1.6 1 M2 -2 l.6 -2 l-1.6 1" fill="#7a63b8"/><circle cx="-1" cy="-.4" r=".55" fill="#ffd83b" stroke="none"/><circle cx="1" cy="-.4" r=".55" fill="#ffd83b" stroke="none"/>`,
+  skunk:()=>`<path d="M-5 0 Q-12 -2 -10 -9 Q-6 -10 -5 -4Z" fill="#3b3557"/><path d="M-6 -2 Q-10 -4 -9 -8" fill="none" stroke="#fff" stroke-width="1.2"/><ellipse cx="0" cy="1" rx="6" ry="4" fill="#3b3557"/><circle cx="5.6" cy="-1" r="3" fill="#3b3557"/><path d="M5.6 -4 V-1.6" stroke="#fff" stroke-width="1"/><circle cx="6.6" cy="-1.4" r=".5" fill="#fff" stroke="none"/><path d="M-3 4.6v2M3 4.6v2" stroke-width="1"/>`,
+  bird:()=>`<g class="pm-flap"><path d="M-1 -1 Q-5 -9 -10 -6 Q-6 -4 -3 1Z M1 -1 Q5 -9 10 -6 Q6 -4 3 1Z" fill="#ffffff"/></g><ellipse cx="0" cy="0" rx="5" ry="3.4" fill="#ffffff"/><circle cx="4" cy="-2" r="2.6" fill="#ffffff"/><path d="M6.4 -2.4 L8.6 -1.6 L6.4 -1Z" fill="#ffb81f"/><circle cx="4.6" cy="-2.6" r=".5" fill="${INK}" stroke="none"/>`,
+  storm:()=>pmBlob([[-6,0,5],[0,-3,6.4],[6,0,5],[0,2,5]],"#b8b3cc")+`<path d="M-1 5 L-3 9 H0 L-2 13" fill="none" stroke="#ffd83b" stroke-width="1.2"/>`,
+  palm:()=>`<path d="M0 7 Q2 -2 -1 -10" fill="none" stroke="#a8743f" stroke-width="2.2"/><path d="M-1 -10 q-8 -2 -12 4 q6 -3 12 -4Z M-1 -10 q8 -3 12 3 q-6 -3 -12 -3Z M-1 -10 q-2 -6 2 -9 q0 5 -2 9Z" fill="#5fc46a"/>`,
   tower:()=>`<rect x="-6" y="-14" width="12" height="20" rx="1.5" fill="#fff"/><rect x="-6" y="-10" width="12" height="3" fill="#ff5e6c" stroke="none"/><rect x="-6" y="-4" width="12" height="3" fill="#ffd83b" stroke="none"/><rect x="-6" y="2" width="12" height="3" fill="#3bb4ff" stroke="none"/><rect x="-6" y="-14" width="12" height="20" rx="1.5" fill="none"/><path d="M-8 -14 L0 -21 L8 -14Z" fill="#9b6bff"/><path d="M0 -21V-27" stroke-width=".7"/><path d="M0 -27 h6 l-1.5 2 l1.5 2 h-6Z" fill="#ff6fbd"/>`
 };
 const PM_BURST=`<g class="pm-burst">${[0,1,2,3,4,5].map(i=>{const a=i*Math.PI/3;return icon("sparkle",Math.round(Math.cos(a)*7),Math.round(Math.sin(a)*7),6,["#ffd83b","#ff6fbd","#3bb4ff"][i%3])}).join("")}</g>`;
 
-/* backgrounds (200 x 125) */
-function pmBg(k){const R=(f)=>`<rect width="${PM_W}" height="${PM_H}" fill="${f}" stroke="none"/>`;
-  const dots=(c,pts)=>pts.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1" fill="${c}" stroke="none"/>`).join("");
+/* worlds are bigger than the screen; the camera follows the pup */
+const PM_WW=400,PM_WH=250;
+function pmRng(s){let h=2166136261;for(let i=0;i<s.length;i++)h=Math.imul(h^s.charCodeAt(i),16777619);
+  return ()=>{h+=0x6D2B79F5;let t=h;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+const pmShore=y=>118+16*Math.sin(y/38)+8*Math.sin(y/17);
+const PM_ROADX=[140,280];
+function pmBg(k){const W=PM_WW,H=PM_WH,R=f=>`<rect width="${W}" height="${H}" fill="${f}" stroke="none"/>`,r=pmRng("bg"+k);
+  const dots=(c,n,rad=1.1)=>{let s="";for(let i=0;i<n;i++)s+=`<circle cx="${pmN(r()*W)}" cy="${pmN(r()*H)}" r="${rad}" fill="${c}" stroke="none"/>`;return s};
   switch(k){
-    case "town":return R("#a6e38f")+`<rect x="0" y="54" width="200" height="16" fill="#8d86a3" stroke="none"/><rect x="92" y="0" width="16" height="125" fill="#8d86a3" stroke="none"/><path d="M0 62H90M110 62H200M100 0V52M100 72V125" stroke="#fff" stroke-width=".9" stroke-dasharray="5 4"/>`+dots("#fff",[[20,10],[70,40],[130,12],[180,46],[60,84],[140,114],[20,118],[184,78]]);
-    case "farm":return R("#b8e986")+`<path d="M0 62 Q100 48 200 64" fill="none" stroke="#e8c88a" stroke-width="10"/><g opacity=".5">${[0,1,2,3].map(i=>`<path d="M118 ${84+i*8} H192" stroke="#8fc96a" stroke-width="2.4"/>`).join("")}</g>`+dots("#ffd83b",[[14,14],[74,12],[120,8],[30,80],[100,114],[188,104],[60,48]]);
-    case "beach":return R("#6fd0f0")+`<path d="M0 0 H62 Q54 30 64 62 Q72 92 60 125 H0Z" fill="#ffe7a8" stroke="none"/><path d="M62 0 Q54 30 64 62 Q72 92 60 125" fill="none" stroke="#fff" stroke-width="2"/>`+[[100,16],[150,60],[120,112],[180,104],[86,80],[170,14]].map(([x,y])=>`<path d="M${x} ${y}q3 -2 6 0t6 0" fill="none" stroke="#bfefff" stroke-width="1"/>`).join("");
-    case "snow":return R("#eef6ff")+`<path d="M0 30 L26 6 L48 24 L74 2 L104 28 L134 8 L162 26 L186 4 L200 16 V30Z" fill="#d9d2f0" stroke="none"/><path d="M26 6 L33 12 L19 12Z M74 2 L82 9 L66 9Z M134 8 L141 14 L127 14Z M186 4 L193 10 L179 10Z" fill="#fff" stroke="none"/><rect x="0" y="55" width="200" height="14" fill="#cfd8ea" stroke="none"/>`+dots("#bfe6ff",[[20,40],[70,90],[130,44],[180,112],[40,112],[150,84]]);
-    case "cave":return R("#3d2f5c")+`<path d="M0 0H200V10Q150 18 100 8T0 12Z" fill="#2a2045" stroke="none"/><ellipse cx="60" cy="70" rx="40" ry="20" fill="#47386a" stroke="none"/><ellipse cx="150" cy="50" rx="34" ry="16" fill="#47386a" stroke="none"/>`+dots("#9b6bff",[[20,60],[90,20],[120,110],[180,70],[60,118]]);
-    case "woods":return R("#5f9e6a")+`<path d="M0 62 Q50 54 100 62 T200 60" fill="none" stroke="#c9a36b" stroke-width="12"/><path d="M0 0H200V30Q100 20 0 30Z" fill="#7c6cc4" opacity=".35" stroke="none"/>`+[[30,8],[90,4],[150,10],[184,4]].map(([x,y])=>icon("star",x,y,5,"#fff6a8")).join("");
+    case "town":return R("#a6e38f")+dots("#fff",40)+`<rect x="0" y="117" width="${W}" height="16" fill="#8d86a3" stroke="none"/>`+PM_ROADX.map(x=>`<rect x="${x-8}" y="0" width="16" height="${H}" fill="#8d86a3" stroke="none"/>`).join("")+
+      `<path d="M0 125H${W}" stroke="#fff" stroke-width=".9" stroke-dasharray="5 4"/>`+PM_ROADX.map(x=>`<path d="M${x} 0V115M${x} 135V${H}" stroke="#fff" stroke-width=".9" stroke-dasharray="5 4"/>`).join("");
+    case "farm":return R("#b8e986")+dots("#ffd83b",50)+`<path d="M0 125 Q100 105 200 125 T400 125" fill="none" stroke="#e8c88a" stroke-width="12"/>`+[[230,30],[40,170],[300,180]].map(([x,y])=>`<g opacity=".45">${[0,1,2,3,4].map(i=>`<path d="M${x} ${y+i*8}H${x+70}" stroke="#8fc96a" stroke-width="2.6"/>`).join("")}</g>`).join("");
+    case "beach":{let d="M0 0";for(let y=0;y<=H;y+=5)d+=`L${pmN(pmShore(y))} ${y}`;
+      let w="";for(let i=0;i<34;i++){const y=r()*H,x=pmShore(y)+20+r()*(W-pmShore(y)-30);w+=`<path d="M${pmN(x)} ${pmN(y)}q3 -2 6 0t6 0" fill="none" stroke="#bfefff" stroke-width="1"/>`}
+      return R("#6fd0f0")+w+`<path d="${d}L0 ${H}Z" fill="#ffe7a8" stroke="none"/><path d="${d.replace("M0 0L","M")}" fill="none" stroke="#fff" stroke-width="2"/>`+dots("#f3d27a",30)}
+    case "snow":{let m="M0 40";for(let x=0;x<=W;x+=28)m+=`L${x+14} ${pmN(8+r()*14)}L${x+28} ${pmN(28+r()*8)}`;
+      return R("#eef6ff")+`<path d="${m}V0H0Z" fill="#d9d2f0" stroke="none"/><rect x="0" y="118" width="${W}" height="14" fill="#cfd8ea" stroke="none"/>`+dots("#bfe6ff",50,1.3)}
+    case "cave":{let s="";for(let i=0;i<14;i++)s+=`<ellipse cx="${pmN(r()*W)}" cy="${pmN(r()*H)}" rx="${pmN(20+r()*30)}" ry="${pmN(10+r()*12)}" fill="#47386a" stroke="none"/>`;return R("#3d2f5c")+s+dots("#9b6bff",40)}
+    case "woods":{let s="";for(let i=0;i<14;i++)s+=icon("star",pmN(r()*W),pmN(r()*30),5,"#fff6a8");
+      return R("#5f9e6a")+dots("#7fbf7f",60,1.4)+`<path d="M0 125 Q50 110 100 125 T200 125 T300 125 T400 125" fill="none" stroke="#c9a36b" stroke-width="12"/>`+s}
   }}
 
 /* vehicles (facing right, wheels on y=+6) */
@@ -2741,48 +2774,79 @@ const PV={
   ziggy:c=>`<path d="M9 0 L13 -13 M10.4 -13 H16.4" fill="none" stroke="${INK}" stroke-width="2.6"/><path d="M9 0 L13 -13 M10.4 -13 H16.4" fill="none" stroke="#ff8a1f" stroke-width="1.4"/><rect x="-14" y="-12" width="10" height="10" rx="1.5" fill="#ffd8a8"/>${icon("paw",-9,-7,6,"#ff8a1f")}<rect x="-11" y="-1.4" width="21" height="3.4" rx="1.7" fill="#ff8a1f"/>`+pmWheel(-8,3.2)+pmWheel(11,3.2)+pupHead(c,-4,-22,15)
 };
 const pmVeh=id=>`<g stroke="${INK}" stroke-width=".6" stroke-linejoin="round" stroke-linecap="round">${PV[id](BY_ID[id])}</g>`;
-const PM_SPEED={ziggy:78,breeze:66},PM_FX={blaze:"#5cc8ff",sprout:"#c9a36b",frost:"#ffffff"};
+const PM_SPEED={ziggy:68,breeze:60},PM_FX={blaze:"#5cc8ff",sprout:"#c9a36b",frost:"#ffffff"};
 
-/* areas + missions */
+/* areas + missions (layouts are generated from each mission's recipe, the same every time) */
 const PM_AREAS=[{id:"town",name:"Rainbow Town",bg:"town"},{id:"farm",name:"Sunny Farm",bg:"farm"},{id:"beach",name:"Splashy Beach",bg:"beach"},{id:"snow",name:"Snowy Peak",bg:"snow"},{id:"woods",name:"Starry Woods",bg:"woods"}];
+/* obstacle kinds: [hit radius, scale, flying?] */
+const PM_OB={cone:[5,1],rock:[6,1.1],tree:[8,1.3],house:[12,1.4],pine:[7,1.2],snowpine:[7,1.2],hay:[7,1.2],bush:[7,1.3],seaRock:[7,1.2],stal:[6,1.2],castle:[6,1.2],barn:[15,1.6],palm:[5,1.2],storm:[9,1.2,1]};
+const PM_MV={car:[7,1.2],cow:[7,1.1],crab:[5,1.1],jelly:[5,1.1],snowball:[6,1.1],bat:[5,1.1],skunk:[6,1.1],bird:[6,1.1,1]};
+/* what each target sits on: [kind, scale, dx, dy, reserve radius] */
+const PM_UNDER={tree:["tree",1.9,0,16,18],shop:["shop",1.5,0,12,20],house:["house",1.3,-15,-5,18],hay:["hay",1.4,0,6,10],bush:["bush",1.4,0,6,10],island:["island",.9,4,6,24],cliff:["cliff",1.2,0,18,22]};
 const PM_MISSIONS=[
- {id:"t1",area:"town",pup:"breeze",title:"Kitten in a Tree",goal:"Bring the kitten home!",alert:"Oh no! A little kitten is stuck up a tall tree. Fly up and bring it back to its friend!",mode:"gather",kind:"kitten",t:[[158,22]],dest:[42,98,"kid"],decor:[["tree",158,40,2.3],["house",40,24,1.4,"#ffe066"],["house",168,104,1.3,"#b9e2ff"]],start:[24,40],done:"You saved the kitten! Meow, thank you!"},
- {id:"t2",area:"town",pup:"blaze",title:"Bakery Fire",goal:"Spray the fires!",alert:"Uh oh! There is a fire at the bakery! Hurry and spray the fire with water!",mode:"hold",kind:"fire",t:[[134,26],[152,18],[170,28]],decor:[["shop",152,38,2],["house",36,24,1.3,"#ffd0e4"]],obs:[[100,40,5,"cone"],[60,62,5,"cone"]],start:[30,96],done:"The fire is out! The bakery is safe!"},
- {id:"t3",area:"town",pup:"cobalt",title:"Duckling Parade",goal:"Find the ducklings!",alert:"Four little ducklings are lost in town! Find them all and lead them home to the pond!",mode:"gather",kind:"duck",t:[[60,28],[150,18],[172,100],[130,92]],dest:[36,100,"pond"],decor:[["tree",176,40,1.2],["tree",20,22,1.1]],obs:[[80,62,5,"cone"],[132,62,5,"cone"],[100,30,5,"cone"]],start:[100,62],done:"Quack quack! All the ducklings are home!"},
- {id:"t4",area:"town",pup:"ziggy",title:"Special Delivery",goal:"Visit every mailbox!",alert:"Ziggy has packages for everyone! Zoom to every mailbox in town!",mode:"touch",kind:"mailbox",t:[[46,32],[178,30],[176,104],[50,106]],decor:[["house",30,26,1.3,"#ffe066"],["house",162,24,1.3,"#b9e2ff"],["house",160,98,1.3,"#ffd0e4"],["house",34,100,1.3,"#c9f0b8"]],obs:[[70,62,5,"cone"],[130,62,5,"cone"]],start:[100,62],done:"Every package is delivered! Zoom zoom!"},
- {id:"f1",area:"farm",pup:"sprout",title:"Rocks in the Field",goal:"Dig away the rocks!",alert:"Big rocks rolled onto the farm field! Dig them all away so the tractor can get through!",mode:"hold",kind:"rock",t:[[62,36],[112,26],[150,86],[86,96]],decor:[["barn",178,26,1.6]],start:[18,62],done:"The field is clear! The farmer says thank you!"},
- {id:"f2",area:"farm",pup:"cobalt",title:"Sheep Round-Up",goal:"Bring the sheep to the pen!",alert:"The sheep got out of their pen! Find them all and bring them back!",mode:"gather",kind:"sheep",t:[[46,24],[166,22],[166,104],[110,36]],dest:[34,98,"pen"],decor:[["barn",182,62,1.5]],obs:[[80,76,6,"hay"],[132,62,6,"hay"]],start:[110,100],done:"Baa baa! All the sheep are safe in their pen!"},
- {id:"f3",area:"farm",pup:"blaze",title:"Hay Fire",goal:"Spray the fires!",alert:"The hay bales caught fire! Spray water to put it out!",mode:"hold",kind:"fire",t:[[120,36],[156,62],[126,88]],decor:[["hay",120,42,1.4],["hay",156,68,1.4],["hay",126,94,1.4],["barn",40,26,1.5]],obs:[[80,62,6,"rock"]],start:[26,92],done:"The hay is safe! Great spraying, Blaze!"},
- {id:"f4",area:"farm",pup:"sprout",title:"Plant a Garden",goal:"Plant the flowers!",alert:"Let's plant a garden! Drive to every seed spot to make a flower grow!",mode:"touch",kind:"seed",t:[[50,30],[90,24],[130,30],[70,92],[112,98]],decor:[["barn",180,30,1.5]],start:[170,100],done:"Look at all the pretty flowers!"},
- {id:"b1",area:"beach",pup:"splash",title:"Clean the Sea",goal:"Pick up the trash!",alert:"Oh no, there is trash floating in the sea! Pick it all up to keep the fish happy!",mode:"touch",kind:"trash",t:[[96,24],[140,38],[176,88],[112,98],[166,18]],bounds:[74,10,192,118],obs:[[132,66,6,"seaRock"]],start:[82,62],noTower:true,done:"The sea is sparkly clean! The fish say thank you!"},
- {id:"b2",area:"beach",pup:"splash",title:"Swimmer Rescue",goal:"Bring the swimmer to the dock!",alert:"A swimmer floated too far out to sea! Bring them back to the dock!",mode:"gather",kind:"swimmer",t:[[174,28]],dest:[78,98,"dock"],bounds:[74,10,192,118],obs:[[122,48,7,"seaRock"],[150,84,6,"seaRock"]],start:[84,40],noTower:true,done:"The swimmer is safe! Splash to the rescue!"},
- {id:"b3",area:"beach",pup:"breeze",title:"Island Rescue",goal:"Fly the friends to the beach!",alert:"Three friends are stuck on a tiny island! Fly them back to the beach!",mode:"gather",kind:"kid",t:[[144,40],[160,50],[138,56]],decor:[["island",152,52,1.3]],dest:[30,98,"umbrella"],start:[30,40],done:"Everyone is back on the beach! Hooray!"},
- {id:"b4",area:"beach",pup:"ziggy",title:"Ice Cream Time",goal:"Bring everyone ice cream!",alert:"It's a hot day at the beach! Bring an ice cream to everyone!",mode:"touch",kind:"towel",t:[[24,22],[46,56],[22,86],[44,112]],bounds:[8,10,56,118],obs:[[24,40,5,"castle"],[30,102,5,"castle"]],start:[44,78],noTower:true,done:"Yum yum! Everyone has ice cream!"},
- {id:"s1",area:"snow",pup:"frost",title:"Snowy Road",goal:"Plow the snow!",alert:"A big snowstorm covered the road! Plow away all the snow!",mode:"hold",kind:"snowpile",t:[[52,62],[92,62],[132,62],[172,62]],decor:[["snowpine",30,42,1],["snowpine",120,40,1.2],["snowpine",80,96,1.2],["snowpine",170,100,1]],start:[16,62],noTower:true,done:"The road is clear! Brrr, great job Frost!"},
- {id:"s2",area:"snow",pup:"frost",title:"Penguin Hunt",goal:"Bring the penguins home!",alert:"Little penguins are lost in the snow! Lead them home to the igloo!",mode:"gather",kind:"penguin",t:[[40,96],[90,28],[130,100],[160,36]],dest:[176,98,"igloo"],obs:[[68,60,7,"snowpine"],[118,48,7,"snowpine"]],start:[24,34],done:"All the penguins are cozy in the igloo!"},
- {id:"s3",area:"snow",pup:"breeze",title:"Mountain Rescue",goal:"Fly the hiker to camp!",alert:"A hiker is stuck high up on the mountain! Fly up and bring them down to camp!",mode:"gather",kind:"climber",t:[[160,24]],decor:[["cliff",160,42,1.6],["snowpine",80,90,1.1]],dest:[34,98,"tent"],start:[30,40],done:"The hiker is safe and warm at camp!"},
- {id:"s4",area:"snow",pup:"sunny",bg:"cave",title:"Crystal Cave",goal:"Find the crystals!",alert:"It's dark in the crystal cave! Shine your light and find all the crystals!",mode:"touch",kind:"gem",dark:true,t:[[36,28],[164,24],[104,58],[48,102],[168,100]],obs:[[76,44,6,"stal"],[132,84,6,"stal"]],start:[100,108],noTower:true,done:"You found every crystal! So sparkly!"},
- {id:"w1",area:"woods",pup:"sunny",title:"Lost Bunnies",goal:"Find the bunnies!",alert:"Three baby bunnies are lost in the dark woods! Shine your light, find them and bring them home!",mode:"gather",kind:"bunny",dark:true,t:[[40,26],[170,40],[126,104]],dest:[26,100,"burrow"],obs:[[80,50,7,"bush"],[140,76,7,"bush"]],start:[70,96],noTower:true,done:"The bunnies are home with their mommy!"},
- {id:"w2",area:"woods",pup:"blaze",title:"Campfire Sparks",goal:"Spray the fires!",alert:"Sparks from the campfire jumped onto the bushes! Spray them out!",mode:"hold",kind:"fire",t:[[50,30],[150,28],[160,96],[60,100]],decor:[["bush",50,36,1.3],["bush",150,34,1.3],["bush",160,102,1.3],["bush",60,106,1.3],["campfire",104,90,1.4]],start:[20,62],done:"All the sparks are out! The woods are safe!"},
- {id:"w3",area:"woods",pup:"sprout",title:"Fallen Trees",goal:"Clear the path!",alert:"A storm knocked trees onto the path! Clear them away!",mode:"hold",kind:"log",t:[[56,62],[106,62],[156,62]],decor:[["pine",30,30,1.3],["pine",80,34,1.1],["pine",136,28,1.3],["pine",180,36,1],["pine",60,104,1.2],["pine",120,100,1.3],["pine",176,104,1.1]],start:[14,62],noTower:true,done:"The path is clear! Let's go camping!"},
- {id:"w4",area:"woods",pup:"ziggy",title:"Lantern Night",goal:"Bring a lantern to every tent!",alert:"Night is coming! Bring a lantern to every tent so nobody is scared of the dark!",mode:"touch",kind:"tent",t:[[40,30],[160,28],[104,100],[172,96]],decor:[["campfire",100,40,1.4],["pine",20,96,1.2],["pine",130,58,1]],obs:[[70,62,6,"bush"],[140,72,6,"bush"]],start:[20,100],done:"Every tent has a light! Good night, campers!"}
+ {id:"t1",area:"town",pup:"breeze",title:"Kittens in the Trees",goal:"Bring the kittens home!",alert:"Oh no! Three kittens are stuck up in tall trees. Fly up and bring them back to their friend! Watch out for the birds and storm clouds!",mode:"gather",kind:"kitten",n:3,under:"tree",start:[30,100],dest:[60,205,"kid"],obs:{storm:5,house:4,tree:4},mv:{bird:4,car:2},done:"You saved all the kittens! Meow, thank you!"},
+ {id:"t2",area:"town",pup:"blaze",title:"Fires in Town",goal:"Spray the fires!",alert:"Uh oh! There are fires all over town! Drive to each one and spray it with water! Watch out for cars!",mode:"hold",kind:"fire",n:6,under:"shop",start:[30,100],obs:{cone:7,tree:5,house:2},mv:{car:4},done:"Every fire is out! The town is safe!"},
+ {id:"t3",area:"town",pup:"cobalt",title:"Duckling Parade",goal:"Lead the ducklings to the pond!",alert:"Six little ducklings are lost in town! Find them and lead them home to the pond. You can lead three at a time!",mode:"gather",kind:"duck",n:6,start:[30,100],dest:[60,205,"pond"],obs:{cone:7,tree:6,house:3},mv:{car:4},done:"Quack quack! All the ducklings are home!"},
+ {id:"t4",area:"town",pup:"ziggy",title:"Special Delivery",goal:"Visit every mailbox!",alert:"Ziggy has packages for everyone! Zoom to every mailbox in town, and don't bump into anything!",mode:"touch",kind:"mailbox",n:7,under:"house",start:[30,100],obs:{cone:8,tree:6},mv:{car:5},done:"Every package is delivered! Zoom zoom!"},
+ {id:"f1",area:"farm",pup:"sprout",title:"Rocks in the Field",goal:"Dig away the rocks!",alert:"Big rocks rolled all over the farm! Dig them away. Watch out for the cows!",mode:"hold",kind:"rock",n:7,start:[24,125],obs:{hay:7,tree:5,barn:1},mv:{cow:4},done:"The fields are clear! The farmer says thank you!"},
+ {id:"f2",area:"farm",pup:"cobalt",title:"Sheep Round-Up",goal:"Bring the sheep to the pen!",alert:"The sheep got out of their pen! Find all seven and bring them back, three at a time!",mode:"gather",kind:"sheep",n:7,start:[24,125],dest:[62,205,"pen"],obs:{hay:7,rock:4,tree:4},mv:{cow:3},done:"Baa baa! All the sheep are safe in their pen!"},
+ {id:"f3",area:"farm",pup:"blaze",title:"Hay Fire",goal:"Spray the fires!",alert:"The hay bales caught fire! Spray water on every one!",mode:"hold",kind:"fire",n:6,under:"hay",start:[24,125],obs:{rock:7,tree:5,barn:1},mv:{cow:3},done:"The hay is safe! Great spraying, Blaze!"},
+ {id:"f4",area:"farm",pup:"sprout",title:"Plant a Garden",goal:"Plant the flowers!",alert:"Let's plant a garden! Drive to every seed spot to make a flower grow!",mode:"touch",kind:"seed",n:8,start:[24,125],obs:{rock:6,hay:5,tree:4},mv:{cow:4},done:"Look at all the pretty flowers!"},
+ {id:"b1",area:"beach",pup:"splash",title:"Clean the Sea",goal:"Pick up the trash!",alert:"Oh no, there is trash floating in the sea! Pick it all up, and steer around the rocks and jellyfish!",mode:"touch",kind:"trash",n:8,zone:"water",start:[160,125],noTower:true,obs:{seaRock:12},mv:{jelly:5},done:"The sea is sparkly clean! The fish say thank you!"},
+ {id:"b2",area:"beach",pup:"splash",title:"Swimmer Rescue",goal:"Bring the swimmers to the dock!",alert:"Four swimmers floated too far out! Bring them back to the dock!",mode:"gather",kind:"swimmer",n:4,zone:"water",start:[160,60],noTower:true,dest:[150,215,"dock"],obs:{seaRock:12},mv:{jelly:5},done:"Everyone is safe! Splash to the rescue!"},
+ {id:"b3",area:"beach",pup:"breeze",title:"Island Rescue",goal:"Fly the friends to the beach!",alert:"Friends are stuck on little islands! Fly them back to the beach. Watch out for the birds and storm clouds!",mode:"gather",kind:"kid",n:5,under:"island",zone:"water",start:[40,60],dest:[50,205,"umbrella"],obs:{storm:6},mv:{bird:5},done:"Everyone is back on the beach! Hooray!"},
+ {id:"b4",area:"beach",pup:"ziggy",title:"Ice Cream Time",goal:"Bring everyone ice cream!",alert:"It's a hot day at the beach! Bring an ice cream to everyone. Watch out for the crabs!",mode:"touch",kind:"towel",n:7,zone:"sand",start:[30,20],noTower:true,obs:{castle:7,palm:5},mv:{crab:4},done:"Yum yum! Everyone has ice cream!"},
+ {id:"s1",area:"snow",pup:"frost",title:"Snowy Roads",goal:"Plow the snow!",alert:"A big snowstorm covered everything! Plow away all the snow piles. Watch out for rolling snowballs!",mode:"hold",kind:"snowpile",n:8,start:[20,125],noTower:true,obs:{snowpine:12,rock:3},mv:{snowball:4},done:"The roads are clear! Brrr, great job Frost!"},
+ {id:"s2",area:"snow",pup:"frost",title:"Penguin Hunt",goal:"Bring the penguins home!",alert:"Little penguins are lost in the snow! Lead them home to the igloo, three at a time!",mode:"gather",kind:"penguin",n:7,start:[24,125],dest:[360,210,"igloo"],obs:{snowpine:11,rock:4},mv:{snowball:3},done:"All the penguins are cozy in the igloo!"},
+ {id:"s3",area:"snow",pup:"breeze",title:"Mountain Rescue",goal:"Fly the hikers to camp!",alert:"Three hikers are stuck high up on the mountains! Fly up and bring them down to camp!",mode:"gather",kind:"climber",n:3,under:"cliff",start:[30,100],dest:[60,210,"tent"],obs:{storm:7,snowpine:5},mv:{bird:4},done:"The hikers are safe and warm at camp!"},
+ {id:"s4",area:"snow",pup:"sunny",bg:"cave",title:"Crystal Cave",goal:"Find the crystals!",alert:"It's dark in the crystal cave! Shine your light and find all the crystals! Watch out for the bats!",mode:"touch",kind:"gem",n:8,dark:true,start:[200,230],noTower:true,obs:{stal:14},mv:{bat:4},done:"You found every crystal! So sparkly!"},
+ {id:"w1",area:"woods",pup:"sunny",title:"Lost Bunnies",goal:"Find the bunnies!",alert:"Baby bunnies are lost in the dark woods! Shine your light, find them and bring them home!",mode:"gather",kind:"bunny",n:6,dark:true,start:[30,125],noTower:true,dest:[50,205,"burrow"],obs:{bush:8,pine:7},mv:{skunk:3},done:"The bunnies are home with their mommy!"},
+ {id:"w2",area:"woods",pup:"blaze",title:"Campfire Sparks",goal:"Spray the fires!",alert:"Sparks from the campfire jumped onto the bushes! Spray them all out!",mode:"hold",kind:"fire",n:7,under:"bush",start:[24,125],obs:{pine:11,bush:3},mv:{skunk:3},done:"All the sparks are out! The woods are safe!"},
+ {id:"w3",area:"woods",pup:"sprout",title:"Fallen Trees",goal:"Clear the logs!",alert:"A storm knocked trees down all over the woods! Clear them away!",mode:"hold",kind:"log",n:7,start:[20,125],noTower:true,obs:{pine:12,bush:4},mv:{skunk:3},done:"The paths are clear! Let's go camping!"},
+ {id:"w4",area:"woods",pup:"ziggy",title:"Lantern Night",goal:"Bring a lantern to every tent!",alert:"Night is coming! Bring a lantern to every tent so nobody is scared of the dark!",mode:"touch",kind:"tent",n:8,start:[24,125],obs:{pine:11,bush:5},mv:{skunk:3},done:"Every tent has a light! Good night, campers!"}
 ];
 const PM_BY_ID=Object.fromEntries(PM_MISSIONS.map(m=>[m.id,m]));
 const pmArea=id=>PM_AREAS.find(a=>a.id===id);
 const pmList=a=>PM_MISSIONS.filter(m=>m.area===a);
 const pmAreaDone=a=>pmList(a).every(m=>pmDone[m.id]);
 function pmUnlocked(a){const i=PM_AREAS.findIndex(x=>x.id===a);return i<=0||pmAreaDone(PM_AREAS[i-1].id)}
-const pmPut=(svg,x,y,s=1)=>`<g transform="translate(${x} ${y})${s!==1?` scale(${s})`:""}">${svg}</g>`;
+const pmPut=(svg,x,y,s=1)=>`<g transform="translate(${pmN(x)} ${pmN(y)})${s!==1?` scale(${s})`:""}">${svg}</g>`;
 const pmSpr=(k,i)=>(SP[k]||SP.rock)(i);
-function pmStatic(m,thumb){const area=pmArea(m.area);
-  let h=pmBg(m.bg||area.bg)+(m.decor||[]).map(([k,x,y,s,c])=>pmPut(k==="house"?SP.house(c):pmSpr(k),x,y,s)).join("");
-  if(m.dest)h+=pmPut(pmSpr(m.dest[2],0),m.dest[0],m.dest[1]);
-  if(!m.noTower)h+=pmPut(SP.tower(),m.start[0],m.start[1]-8,.9);
-  h+=(m.obs||[]).map(([x,y,r,k])=>pmPut(pmSpr(k),x,y,r/6)).join("");
-  if(thumb){h+=m.t.map(([x,y],i)=>pmPut(pmSpr(m.kind,i),x,y,1.2)).join("")+pmPut(pmVeh(m.pup),m.start[0],m.start[1],1);
-    if(m.dark)h+=`<rect width="${PM_W}" height="${PM_H}" fill="#140d2e" opacity=".45" stroke="none"/>`}
+function pmZoneOk(m,x,y,pad=8){const z=m.zone;if(!z)return true;if(m.area!=="beach")return true;const s=pmShore(y);return z==="water"?x>s+pad:x<s-pad}
+const pmSegD=(px,py,[ax,ay,bx,by])=>{const dx=bx-ax,dy=by-ay,t=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/(dx*dx+dy*dy||1)));return Math.hypot(px-ax-dx*t,py-ay-dy*t)};
+/* build a mission's world: targets spread out, obstacles and movers placed around them */
+function pmGen(m){if(m._L)return m._L;const r=pmRng("pm"+m.id),W=PM_WW,H=PM_WH,taken=[],lanes=[];
+  const fly=m.pup==="breeze",groundZone=fly?null:m.zone;
+  const ok=(x,y,rad,zone)=>{if(x<rad+6||y<rad+6||x>W-rad-6||y>H-rad-6)return false;
+    if(zone&&m.area==="beach"){const s=pmShore(y);if(zone==="water"?x<s+rad+4:x>s-rad-4)return false}
+    if(Math.hypot(x-m.start[0],y-m.start[1])<rad+26)return false;if(m.dest&&Math.hypot(x-m.dest[0],y-m.dest[1])<rad+26)return false;
+    for(const t of taken)if(Math.hypot(x-t[0],y-t[1])<rad+t[2]+4)return false;
+    for(const l of lanes)if(pmSegD(x,y,l)<rad+9)return false;return true};
+  const pick=(rad,zone,spread)=>{let best=null,bs=-1;for(let k=0;k<(spread?60:30);k++){const x=r()*W,y=r()*H;if(!ok(x,y,rad,zone))continue;
+      if(!spread)return [x,y];let md=1e9;for(const t of spread)md=Math.min(md,Math.hypot(x-t[0],y-t[1]));md=Math.min(md,Math.hypot(x-m.start[0],y-m.start[1])*1.4);if(md>bs){bs=md;best=[x,y]}}return best};
+  const movers=[];
+  Object.entries(m.mv||{}).forEach(([k,n])=>{for(let i=0;i<n;i++){let path=null;
+    if(k==="car"){const opts=[[20,121,380,121],[380,129,20,129],...PM_ROADX.flatMap(x=>[[x-4,10,x-4,240],[x+4,240,x+4,10]])];path=opts[(i+Math.floor(r()*2))%opts.length]}
+    else for(let a=0;a<40&&!path;a++){const x=r()*W,y=r()*H,len=70+r()*70,hor=r()<.6,p=hor?[x,y,x+len,y]:[x,y,x,y+len];
+      const zone=PM_MV[k][2]?null:groundZone;if(ok(p[0],p[1],8,zone)&&ok(p[2],p[3],8,zone)&&ok((p[0]+p[2])/2,(p[1]+p[3])/2,8,zone))path=p}
+    if(path){lanes.push(path);movers.push({k,i,path,t:r(),dir:r()<.5?1:-1,spd:k==="car"?22:12+r()*10,x:path[0],y:path[1]})}}});
+  const items=[],under=PM_UNDER[m.under];
+  for(let i=0;i<m.n;i++){const rad=under?under[4]:12,p=pick(rad,m.zone,items.length?items:[[m.start[0],m.start[1]]]);if(!p)continue;items.push(p);taken.push([p[0],p[1],rad])}
+  const obs=[];
+  Object.entries(m.obs||{}).forEach(([k,n])=>{const [rad,s,air]=PM_OB[k];for(let i=0;i<n;i++){
+    const zone=k==="seaRock"?"water":(k==="castle"||k==="palm")?"sand":groundZone;const p=pick(rad+4,zone);if(!p)continue;taken.push([p[0],p[1],rad+4]);obs.push({k,x:p[0],y:p[1],r:rad,s,air:!!air})}});
+  return m._L={items,obs,movers}}
+function pmStatic(m,thumb){const area=pmArea(m.area),L=pmGen(m),under=PM_UNDER[m.under];
+  let h=pmBg(m.bg||area.bg);
+  if(under)h+=L.items.map(([x,y])=>pmPut(pmSpr(under[0]),x+under[2],y+under[3],under[1])).join("");
+  if(m.dest)h+=pmPut(pmSpr(m.dest[2],0),m.dest[0],m.dest[1],1.2);
+  if(!m.noTower)h+=pmPut(SP.tower(),m.start[0]-16,m.start[1]-6,.9);
+  h+=L.obs.filter(o=>!o.air).map(o=>pmPut(o.k==="house"?SP.house(["#ffe066","#b9e2ff","#ffd0e4","#c9f0b8"][Math.round(o.x)%4]):pmSpr(o.k),o.x,o.y,o.s)).join("");
+  if(thumb){h+=L.items.map(([x,y],i)=>pmPut(pmSpr(m.kind,i),x,y,1.4)).join("")+L.obs.filter(o=>o.air).map(o=>pmPut(pmSpr(o.k),o.x,o.y,o.s)).join("")+
+      L.movers.map(v=>pmPut(pmSpr(v.k,v.i),v.path[0],v.path[1],PM_MV[v.k][1])).join("")+pmPut(pmVeh(m.pup),m.start[0],m.start[1],1.3);
+    if(m.dark)h+=`<rect width="${PM_WW}" height="${PM_WH}" fill="#140d2e" opacity=".45" stroke="none"/>`}
   return `<g stroke="${INK}" stroke-width=".6" stroke-linejoin="round" stroke-linecap="round">${h}</g>`}
-const pmThumb=m=>`<svg viewBox="0 0 ${PM_W} ${PM_H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${pmStatic(m,true)}</svg>`;
+const pmThumb=m=>`<svg viewBox="0 0 ${PM_WW} ${PM_WH}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${pmStatic(m,true)}</svg>`;
 
 /* map screen */
 let pmAreaSel=null;
@@ -2815,83 +2879,120 @@ function pmAlert(m){const c=BY_ID[m.pup];
     if(x.id!==m.pup){sfx.miss();b.classList.remove("no");void b.offsetWidth;b.classList.add("no");say(`${x.name} is the ${x.role}. Try another pup!`);return}
     sfx.match();say(`${x.name} is on the way! ${m.goal}`);closeOverlay();pmStart(m)}}
 
-/* play */
-const pmStage=document.getElementById("pmStage");
-let pmS=null;
-function pmLayout(){const r=document.getElementById("pm-wrap").getBoundingClientRect(),s=Math.max(1,Math.min(r.width/PM_W,r.height/PM_H));
-  pmStage.style.width=Math.floor(PM_W*s)+"px";pmStage.style.height=Math.floor(PM_H*s)+"px"}
+/* play: steer with the direction pad (or arrow keys); the camera follows the pup */
+const pmStage=document.getElementById("pmStage"),pmPad=document.getElementById("pmPad");
+let pmS=null,pmView={vw:200,vh:125},pmPadDir=[0,0];const pmKeys={};
+const PM_CAP=3;
+function pmLayout(){const r=document.getElementById("pm-wrap").getBoundingClientRect();if(!r.width||!r.height)return;
+  const s=Math.max(2,Math.min(r.width/185,r.height/112));
+  pmView={vw:Math.min(PM_WW,r.width/s),vh:Math.min(PM_WH,r.height/s)};
+  pmStage.style.width=Math.floor(pmView.vw*s)+"px";pmStage.style.height=Math.floor(pmView.vh*s)+"px";if(pmS)pmDraw()}
 function pmStart(m){if(pmS&&pmS.raf)cancelAnimationFrame(pmS.raf);
-  const b=m.bounds||[8,8,192,119];
-  const items=m.t.map(([x,y],i)=>({i,x,y,hx:x,hy:y,done:false,prog:0,state:"wait"}));
-  pmS={m,b,items,x:m.start[0],y:m.start[1],tx:m.start[0],ty:m.start[1],face:1,trail:[],carried:[],home:0,pid:null,last:0,idle:0,bump:0,tick:0,over:false,fly:m.pup==="breeze",speed:PM_SPEED[m.pup]||56,raf:0};
+  const L=pmGen(m),fly=m.pup==="breeze";
+  const items=L.items.map(([x,y],i)=>({i,x,y,hx:x,hy:y,done:false,prog:0,state:"wait"}));
+  const movers=L.movers.map(v=>({...v}));
+  pmS={m,items,movers,obs:L.obs.filter(o=>o.air===fly),x:m.start[0],y:m.start[1],face:1,trail:[],carried:[],home:0,last:0,idle:0,stun:0,bx:0,by:0,oops:0,full:0,tick:0,over:false,fly,speed:PM_SPEED[m.pup]||52,raf:0};
   document.getElementById("pmTitle").textContent=m.goal;
+  pmStage.setAttribute("viewBox",`0 0 ${pmView.vw} ${pmView.vh}`);
   pmStage.innerHTML=`<defs><radialGradient id="pmHoleG"><stop offset=".55" stop-color="#000"/><stop offset="1" stop-color="#fff"/></radialGradient>
-      <mask id="pmDarkM" maskUnits="userSpaceOnUse" x="0" y="0" width="${PM_W}" height="${PM_H}"><rect width="${PM_W}" height="${PM_H}" fill="#fff"/><circle id="pmHole" r="34" fill="url(#pmHoleG)"/></mask></defs>
+      <mask id="pmDarkM" maskUnits="userSpaceOnUse" x="0" y="0" width="${PM_WW}" height="${PM_WH}"><rect width="${PM_WW}" height="${PM_WH}" fill="#fff"/><circle id="pmHole" r="38" fill="url(#pmHoleG)"/></mask></defs>
     ${pmStatic(m,false)}
-    ${m.dest?`<g transform="translate(${m.dest[0]} ${m.dest[1]})"><circle id="pmDestRing" class="pm-ring" r="17" fill="none" stroke="#fff" stroke-width="1.6" stroke-dasharray="3 2"/></g>`:""}
-    <g stroke="${INK}" stroke-width=".6" stroke-linejoin="round" stroke-linecap="round" id="pmItems">${items.map(it=>`<g class="pm-t" data-i="${it.i}" transform="translate(${it.x} ${it.y})"><circle class="pm-ring" r="11" fill="none" stroke="#fff" stroke-width="1.6" stroke-dasharray="3 2"/><g class="pm-spr">${pmSpr(m.kind,it.i)}</g></g>`).join("")}</g>
+    ${m.dest?`<g transform="translate(${m.dest[0]} ${m.dest[1]})"><circle id="pmDestRing" class="pm-ring" r="20" fill="none" stroke="#fff" stroke-width="1.6" stroke-dasharray="3 2"/></g>`:""}
+    <g stroke="${INK}" stroke-width=".6" stroke-linejoin="round" stroke-linecap="round">
+      <g id="pmItems">${items.map(it=>`<g class="pm-t" transform="translate(${pmN(it.x)} ${pmN(it.y)})"><circle class="pm-ring" r="11" fill="none" stroke="#fff" stroke-width="1.6" stroke-dasharray="3 2"/><g class="pm-spr">${pmSpr(m.kind,it.i)}</g></g>`).join("")}</g>
+      <g id="pmMovers">${movers.map(v=>`<g class="pm-mv"><g>${pmSpr(v.k,v.i)}</g></g>`).join("")}</g>
+    </g>
     <path id="pmFx" class="pm-spray" d="" fill="none" stroke="${PM_FX[m.pup]||"#ffd83b"}" stroke-width="2.6" stroke-linecap="round" opacity="0"/>
-    <g id="pmVeh"><g id="pmVehFlip" class="${pmS.fly?"pm-hover":""}">${pmVeh(m.pup)}</g></g>
-    ${m.dark?`<rect width="${PM_W}" height="${PM_H}" fill="#140d2e" opacity=".94" mask="url(#pmDarkM)"/>`:""}
+    <g id="pmVeh"><g id="pmVehFlip"><g id="pmVehBody" class="${fly?"pm-hover":""}">${pmVeh(m.pup)}</g></g></g>
+    <g stroke="${INK}" stroke-width=".6" stroke-linejoin="round">${S_AIR(m)}</g>
+    ${m.dark?`<rect width="${PM_WW}" height="${PM_WH}" fill="#140d2e" opacity=".94" mask="url(#pmDarkM)"/>`:""}
+    <g id="pmArrow" opacity="0"><circle r="7.5" fill="#fff" stroke="${INK}" stroke-width=".6"/><path d="M-2.6 -4 L4 0 L-2.6 4Z" fill="#ff5fa2"/></g>
     <g id="pmFxTop"></g>`;
-  pmS.els=[...pmStage.querySelectorAll(".pm-t")];
-  pmS.veh=pmStage.querySelector("#pmVeh");pmS.flip=pmStage.querySelector("#pmVehFlip");pmS.fx=pmStage.querySelector("#pmFx");pmS.hole=pmStage.querySelector("#pmHole");
+  const q=s=>pmStage.querySelector(s);
+  Object.assign(pmS,{els:[...pmStage.querySelectorAll(".pm-t")],mvEls:[...pmStage.querySelectorAll(".pm-mv")],veh:q("#pmVeh"),flip:q("#pmVehFlip"),body:q("#pmVehBody"),fx:q("#pmFx"),hole:q("#pmHole"),arrow:q("#pmArrow")});
   pmPips();show("pmplay");pmDraw();pmS.raf=requestAnimationFrame(pmFrame)}
-function pmPips(){const n=pmS.items.length,d=pmS.items.filter(i=>i.done).length;
-  document.getElementById("pmPips").innerHTML=pmS.items.map((_,i)=>`<i class="${i<d?"on":""}"></i>`).join("")}
-function pmBurst(x,y){const g=document.createElementNS("http://www.w3.org/2000/svg","g");g.setAttribute("transform",`translate(${x} ${y})`);g.innerHTML=PM_BURST;
+/* flying obstacles (storm clouds) draw above the pup */
+const S_AIR=m=>pmGen(m).obs.filter(o=>o.air).map(o=>pmPut(pmSpr(o.k),o.x,o.y,o.s)).join("");
+function pmPips(){const d=pmS.items.filter(i=>i.done).length;document.getElementById("pmPips").innerHTML=pmS.items.map((_,i)=>`<i class="${i<d?"on":""}"></i>`).join("")}
+function pmBurst(x,y){const g=document.createElementNS("http://www.w3.org/2000/svg","g");g.setAttribute("transform",`translate(${pmN(x)} ${pmN(y)})`);g.innerHTML=PM_BURST;
   pmStage.querySelector("#pmFxTop").appendChild(g);setTimeout(()=>g.remove(),700)}
 function pmProgress(it,x,y){it.done=true;pmS.idle=0;pmHint(false);pmBurst(x,y);pmPips();
   [784,988,1319].forEach((f,i)=>tone(f,i*.07,.25,"triangle",.12));
-  const left=pmS.items.filter(i=>!i.done).length;
-  if(!left){pmS.over=true;pmS.pid=null;setTimeout(pmWin,900)}}
+  if(!pmS.items.some(i=>!i.done)){pmS.over=true;setTimeout(pmWin,900)}}
 function pmHint(on){pmS.els.forEach((el,i)=>{const it=pmS.items[i];el.classList.toggle("hint",on&&it.state==="wait"&&!it.done)});
   const r=pmStage.querySelector("#pmDestRing");if(r)r.classList.toggle("hint",on&&pmS.carried.length>0);pmS.hinting=on}
-function pmAim(e){const pt=pmStage.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const ctm=pmStage.getScreenCTM();if(!ctm)return;
-  const q=pt.matrixTransform(ctm.inverse()),[x0,y0,x1,y1]=pmS.b;let tx=Math.max(x0,Math.min(x1,q.x)),ty=Math.max(y0,Math.min(y1,q.y));
-  if(pmS.m.mode==="hold"){const it=pmS.items.find(i=>!i.done&&Math.hypot(i.x-tx,i.y-ty)<14);
-    if(it){let dx=pmS.x-it.x,dy=pmS.y-it.y,d=Math.hypot(dx,dy)||1;if(d<1){dx=-1;dy=0;d=1}
-      tx=Math.max(x0,Math.min(x1,it.x+dx/d*18));ty=Math.max(y0,Math.min(y1,it.y+dy/d*18+4))}}
-  pmS.tx=tx;pmS.ty=ty}
-pmStage.addEventListener("pointerdown",e=>{if(!pmS||pmS.over)return;e.preventDefault();audio();try{pmStage.setPointerCapture(e.pointerId)}catch(_){}pmS.pid=e.pointerId;pmAim(e)});
-pmStage.addEventListener("pointermove",e=>{if(pmS&&!pmS.over&&e.pointerId===pmS.pid)pmAim(e)});
-function pmUp(e){if(pmS&&e.pointerId===pmS.pid)pmS.pid=null}
-["pointerup","pointercancel","lostpointercapture"].forEach(t=>pmStage.addEventListener(t,pmUp));
+/* where the pup should head next: home when carrying a full load (or nothing is left to find), else the nearest goal */
+function pmNext(){const S=pmS,m=S.m;
+  if(m.mode==="gather"&&S.carried.length&&(S.carried.length>=PM_CAP||!S.items.some(i=>i.state==="wait")))return [m.dest[0],m.dest[1]];
+  let best=null,bd=1e9;S.items.forEach(it=>{if(it.done||it.state!=="wait")return;const d=Math.hypot(it.x-S.x,it.y-S.y);if(d<bd){bd=d;best=[it.x,it.y]}});return best}
+/* direction pad: press anywhere on it and slide; 8 directions */
+function pmPadAt(e){const r=pmPad.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);
+  if(Math.hypot(dx,dy)<r.width*.12){pmPadDir=[0,0];pmPad.dataset.dir="";return}
+  const a=Math.round(Math.atan2(dy,dx)/(Math.PI/4)),k=((a%8)+8)%8;const D=[[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1],[0,-1],[1,-1]][k];
+  pmPadDir=D;pmPad.dataset.dir=["r","dr","d","dl","l","ul","u","ur"][k]}
+let pmPadId=null;
+pmPad.addEventListener("pointerdown",e=>{e.preventDefault();audio();pmPadId=e.pointerId;try{pmPad.setPointerCapture(e.pointerId)}catch(_){}pmPadAt(e)});
+pmPad.addEventListener("pointermove",e=>{if(e.pointerId===pmPadId)pmPadAt(e)});
+function pmPadUp(e){if(e.pointerId!==pmPadId)return;pmPadId=null;pmPadDir=[0,0];pmPad.dataset.dir=""}
+["pointerup","pointercancel","lostpointercapture"].forEach(t=>pmPad.addEventListener(t,pmPadUp));
+const PM_KEYMAP={ArrowUp:"u",ArrowDown:"d",ArrowLeft:"l",ArrowRight:"r",w:"u",s:"d",a:"l",d:"r"};
+addEventListener("keydown",e=>{const k=PM_KEYMAP[e.key];if(k&&!document.getElementById("pmplay").hidden&&document.getElementById("overlay").hidden){pmKeys[k]=true;e.preventDefault()}});
+addEventListener("keyup",e=>{const k=PM_KEYMAP[e.key];if(k)pmKeys[k]=false});
+addEventListener("blur",()=>{for(const k in pmKeys)pmKeys[k]=false});
+function pmBump(S,ox,oy,md){let ex=S.x-ox,ey=S.y-oy,ed=Math.hypot(ex,ey);if(ed<.01){ex=0;ey=1;ed=1}
+  S.x=ox+ex/ed*md;S.y=oy+ey/ed*md;if(S.stun>0)return;
+  S.bx=ex/ed*70;S.by=ey/ed*70;S.stun=.5;tone(220,0,.1,"square",.07);tone(150,.09,.16,"square",.06);
+  S.body.classList.remove("pm-oops");void S.body.getBBox();S.body.classList.add("pm-oops");
+  if(S.oops<=0){say(["Oops!","Uh oh, bump!","Whoa, careful!"][Math.floor(Math.random()*3)]);S.oops=4}}
 function pmFrame(t){const S=pmS;if(!S)return;if(document.getElementById("pmplay").hidden){S.raf=0;return}
-  const dt=S.last?Math.min(.05,(t-S.last)/1000):0;S.last=t;
+  const dt=S.last?Math.min(.05,(t-S.last)/1000):0;S.last=t;const m=S.m;
+  S.movers.forEach(v=>{const [ax,ay,bx,by]=v.path,len=Math.hypot(bx-ax,by-ay)||1;v.t+=v.dir*v.spd*dt/len;
+    if(v.t>1){v.t=1;v.dir=-1}else if(v.t<0){v.t=0;v.dir=1}v.x=ax+(bx-ax)*v.t;v.y=ay+(by-ay)*v.t;v.face=(bx-ax||by-ay)*v.dir>=0?1:-1;if(bx===ax)v.face=1});
   if(!S.over){
-    let dx=S.tx-S.x,dy=S.ty-S.y,d=Math.hypot(dx,dy);
-    if(d>.6){const st=Math.min(d,S.speed*dt);S.x+=dx/d*st;S.y+=dy/d*st;if(Math.abs(dx)>1.5)S.face=dx>0?1:-1}
-    const [x0,y0,x1,y1]=S.b;S.x=Math.max(x0,Math.min(x1,S.x));S.y=Math.max(y0,Math.min(y1,S.y));
-    S.bump-=dt;
-    if(!S.fly)for(const [ox,oy,r] of (S.m.obs||[])){let ex=S.x-ox,ey=S.y-oy,ed=Math.hypot(ex,ey);const md=r+7;
-      if(ed<md){if(ed<.01){ex=0;ey=1;ed=1}S.x=ox+ex/ed*md;S.y=oy+ey/ed*md;
-        const tg=Math.sign(-ey*(S.tx-S.x)+ex*(S.ty-S.y))||1;S.x+=-ey/ed*tg*S.speed*dt*.8;S.y+=ex/ed*tg*S.speed*dt*.8;
-        if(S.bump<=0){tone(190,0,.12,"square",.05);S.bump=.7}}}
+    S.oops-=dt;S.full-=dt;
+    let dx=pmPadDir[0]+(pmKeys.r?1:0)-(pmKeys.l?1:0),dy=pmPadDir[1]+(pmKeys.d?1:0)-(pmKeys.u?1:0);
+    dx=Math.max(-1,Math.min(1,dx));dy=Math.max(-1,Math.min(1,dy));const dl=Math.hypot(dx,dy);
+    let vx=0,vy=0;
+    if(S.stun>0){S.stun-=dt;vx=S.bx;vy=S.by;S.bx*=.88;S.by*=.88}
+    else if(dl){vx=dx/dl*S.speed;vy=dy/dl*S.speed;if(dx)S.face=dx>0?1:-1;S.idle=Math.min(S.idle,4)}
+    if(vx||vy){const zoneOk=(x,y)=>S.fly||pmZoneOk(m,x,y,6);let nx=S.x+vx*dt,ny=S.y+vy*dt;
+      if(zoneOk(nx,ny)){S.x=nx;S.y=ny}else if(zoneOk(nx,S.y))S.x=nx;else if(zoneOk(S.x,ny))S.y=ny}
+    S.x=Math.max(8,Math.min(PM_WW-8,S.x));S.y=Math.max(10,Math.min(PM_WH-8,S.y));
+    for(const o of S.obs){const md=o.r+6;if(Math.hypot(S.x-o.x,S.y-o.y)<md)pmBump(S,o.x,o.y,md)}
+    for(const v of S.movers){if(!!PM_MV[v.k][2]!==S.fly)continue;const md=PM_MV[v.k][0]+6;if(Math.hypot(S.x-v.x,S.y-v.y)<md)pmBump(S,v.x,v.y,md)}
     const lt=S.trail[S.trail.length-1];if(!lt||Math.hypot(lt[0]-S.x,lt[1]-S.y)>.8){S.trail.push([S.x,S.y]);if(S.trail.length>240)S.trail.shift()}
-    const m=S.m;let working=null;
-    if(m.mode==="touch"){S.items.forEach((it,i)=>{if(!it.done&&Math.hypot(it.x-S.x,it.y-S.y)<14){
-      const done=SP[m.kind+"Done"];const sp=S.els[i].querySelector(".pm-spr");if(done)sp.innerHTML=done(i);else S.els[i].style.display="none";pmProgress(it,it.x,it.y)}})}
+    let working=null;
+    if(m.mode==="touch"){S.items.forEach((it,i)=>{if(!it.done&&Math.hypot(it.x-S.x,it.y-S.y)<15){
+      const done=SP[m.kind+"Done"],sp=S.els[i].querySelector(".pm-spr");if(done)sp.innerHTML=done(i);else S.els[i].style.display="none";pmProgress(it,it.x,it.y)}})}
     else if(m.mode==="hold"){let best=null,bd=28;S.items.forEach(it=>{if(!it.done){const q=Math.hypot(it.x-S.x,it.y-S.y);if(q<bd){bd=q;best=it}}});
-      if(best){working=best;best.prog+=dt/1.2;S.idle=0;if(S.hinting)pmHint(false);if(Math.abs(best.x-S.x)>2)S.face=best.x>S.x?1:-1;
+      if(best){working=best;best.prog+=dt/1.2;S.idle=0;if(S.hinting)pmHint(false);if(Math.abs(best.x-S.x)>2&&!dl)S.face=best.x>S.x?1:-1;
         S.tick-=dt;if(S.tick<=0){tone(m.pup==="blaze"?420+Math.random()*80:200+Math.random()*60,0,.1,"sine",.05);S.tick=.18}
         if(best.prog>=1){S.els[best.i].style.display="none";pmProgress(best,best.x,best.y)}}}
-    else{S.items.forEach(it=>{if(it.state==="wait"&&Math.hypot(it.x-S.x,it.y-S.y)<14){it.state="follow";S.carried.push(it);S.idle=0;if(S.hinting)pmHint(false);
-        tone(660,0,.12,"triangle",.12);tone(990,.1,.16,"triangle",.12)}});
-      if(S.carried.length&&Math.hypot(m.dest[0]-S.x,m.dest[1]-S.y)<22){S.carried.forEach(it=>{const k=S.home++,a=-Math.PI/2+k*1.1,rr=k?13:9;
+    else{S.items.forEach(it=>{if(it.state==="wait"&&Math.hypot(it.x-S.x,it.y-S.y)<15){
+        if(S.carried.length>=PM_CAP){if(S.full<=0){say("You can lead three at a time. Bring them home first!");S.full=6}return}
+        it.state="follow";S.carried.push(it);S.idle=0;if(S.hinting)pmHint(false);tone(660,0,.12,"triangle",.12);tone(990,.1,.16,"triangle",.12)}});
+      if(S.carried.length&&Math.hypot(m.dest[0]-S.x,m.dest[1]-S.y)<24){S.carried.forEach(it=>{const k=S.home++,a=-Math.PI/2+k*.9,rr=12+Math.floor(k/7)*6;
           it.state="home";it.hx=m.dest[0]+Math.cos(a)*rr;it.hy=m.dest[1]+Math.sin(a)*rr*.6+2;pmProgress(it,it.hx,it.hy)});S.carried=[]}}
     if(working){const nx=S.x+S.face*15,ny=S.y-6;S.fx.setAttribute("d",`M${pmN(nx)} ${pmN(ny)}Q${pmN((nx+working.x)/2)} ${pmN(Math.min(ny,working.y)-10)} ${pmN(working.x)} ${pmN(working.y)}`);S.fx.setAttribute("opacity","1")}
     else S.fx.setAttribute("opacity","0");
-    S.idle+=dt;if(S.idle>6&&!S.hinting)pmHint(true)}
+    S.idle+=dt;if(S.idle>7&&!S.hinting)pmHint(true)}
   else S.fx.setAttribute("opacity","0");
   S.carried.forEach((it,k)=>{const p=S.trail[Math.max(0,S.trail.length-1-(k+1)*14)]||[S.x,S.y];it.x+=(p[0]-it.x)*Math.min(1,dt*10);it.y+=(p[1]+2-it.y)*Math.min(1,dt*10)});
   S.items.forEach(it=>{if(it.state==="home"){it.x+=(it.hx-it.x)*Math.min(1,dt*8);it.y+=(it.hy-it.y)*Math.min(1,dt*8)}});
   pmDraw();S.raf=requestAnimationFrame(pmFrame)}
-function pmDraw(){const S=pmS;
+function pmDraw(){const S=pmS,{vw,vh}=pmView;
+  const cx=Math.max(0,Math.min(PM_WW-vw,S.x-vw/2)),cy=Math.max(0,Math.min(PM_WH-vh,S.y-vh/2));
+  pmStage.setAttribute("viewBox",`${pmN(cx)} ${pmN(cy)} ${pmN(vw)} ${pmN(vh)}`);
   S.veh.setAttribute("transform",`translate(${pmN(S.x)} ${pmN(S.y)})`);S.flip.setAttribute("transform",`scale(${S.face} 1)`);
   if(S.hole){S.hole.setAttribute("cx",pmN(S.x+S.face*6));S.hole.setAttribute("cy",pmN(S.y-4))}
   S.items.forEach((it,i)=>{const el=S.els[i];if(el.style.display==="none")return;const s=S.m.mode==="hold"?1-it.prog*.55:it.state==="follow"?.8:1;
-    el.setAttribute("transform",`translate(${pmN(it.x)} ${pmN(it.y)}) scale(${pmN(s*1.25)})`)})}
+    el.setAttribute("transform",`translate(${pmN(it.x)} ${pmN(it.y)}) scale(${pmN(s*1.3)})`)});
+  S.movers.forEach((v,i)=>{S.mvEls[i].setAttribute("transform",`translate(${pmN(v.x)} ${pmN(v.y)}) scale(${pmN((v.face||1)*PM_MV[v.k][1])} ${PM_MV[v.k][1]})`)});
+  const nt=S.over?null:pmNext();let show=false;
+  if(nt){const m=10,inView=nt[0]>cx+m&&nt[0]<cx+vw-m&&nt[1]>cy+m&&nt[1]<cy+vh-m;
+    if(!inView){const ox=cx+vw/2,oy=cy+vh/2,dx=nt[0]-ox,dy=nt[1]-oy,k=Math.min((vw/2-12)/Math.abs(dx||1e-6),(vh/2-12)/Math.abs(dy||1e-6));
+      S.arrow.setAttribute("transform",`translate(${pmN(ox+dx*k)} ${pmN(oy+dy*k)}) rotate(${pmN(Math.atan2(dy,dx)*180/Math.PI)})`);show=true}}
+  S.arrow.setAttribute("opacity",show?"1":"0")}
 addEventListener("resize",()=>{if(!document.getElementById("pmplay").hidden)pmLayout()});
 
 /* win */
