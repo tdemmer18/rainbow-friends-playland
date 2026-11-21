@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Playland">
@@ -33,6 +33,7 @@
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
+html,body,*{touch-action:manipulation}
 body{
   margin:0;background:linear-gradient(180deg,var(--sky-top),var(--sky-bottom));background-color:var(--sky-top);
   color:var(--ink);font-family:var(--body);overflow:hidden;
@@ -431,12 +432,41 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
 .pm-star{position:absolute;top:-12px;right:-8px;width:52px;height:52px;filter:drop-shadow(0 3px 0 rgba(59,42,99,.2))}
 .pm-star svg{width:100%;height:100%}
 .pm-locked{grid-column:1/-1;text-align:center;font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);color:var(--ink-soft);background:var(--paper);border-radius:28px;padding:30px}
-#pmTitle{font-size:clamp(22px,3.4vw,34px);text-align:center;flex:1 1 auto;min-width:0}
-.pm-pips{display:flex;gap:6px;flex:0 0 auto}
-.pm-pips i{width:28px;height:28px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 3px #e4dcf6;display:block}
-.pm-pips i.on{background:var(--gold);box-shadow:inset 0 0 0 3px #f2b705;animation:pop .5s}
+.pm-goalbar{flex:1 1 auto;min-width:0;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}
+.pm-pips{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;background:var(--paper);border-radius:999px;padding:4px 10px;box-shadow:0 4px 0 rgba(59,42,99,.12)}
+.pm-pips i{width:clamp(34px,4.4vw,46px);height:clamp(34px,4.4vw,46px);display:block}
+.pm-pips i svg{width:100%;height:100%;display:block}
+.pm-pips i.on{animation:pop .5s}
+.pm-carry{display:flex;align-items:center;gap:4px;background:var(--paper);border-radius:999px;padding:4px 10px 4px 6px;box-shadow:0 4px 0 rgba(59,42,99,.12)}
+.pm-carry[hidden]{display:none}
+.pm-carry .pm-home{width:46px;height:46px}.pm-carry.full .pm-home{animation:pmpulse 1s ease-in-out infinite}
+.pm-carry .pm-home svg,.pm-carry i svg{width:100%;height:100%;display:block}
+.pm-carry i{width:36px;height:36px;border-radius:50%;background:var(--cloud);box-shadow:inset 0 0 0 3px #e4dcf6;display:block}
+.pm-carry i.on{background:#fff6c2;box-shadow:inset 0 0 0 3px #ffd83b}
+.pm-carry b{font-size:26px;color:#ff5fa2;padding:0 2px}
+.pm-al-top{display:flex;align-items:center;gap:12px;justify-content:center}
+.pm-al-top h2{font-size:clamp(24px,3.6vw,32px)}
+.pm-hear{width:58px;height:58px;background:#efe7ff}
+.pm-al-pic{width:100%;aspect-ratio:2/1;border-radius:22px;overflow:hidden;box-shadow:0 0 0 4px #ffd83b}
+.pm-al-pic svg{width:100%;height:100%;display:block}
+.pm-find{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:26px}
+.pm-find .pm-badge{width:70px;height:70px;box-shadow:0 0 0 5px #ffd83b;animation:pmpulse 1.2s ease-in-out infinite}
+.pm-find .pm-badge svg{width:48px;height:48px}
+.pm-find .pm-down{width:40px;height:40px}
+.pm-choice{position:relative}
+.pm-choice .pm-cbadge{position:absolute;top:-10px;left:-8px;width:44px;height:44px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px var(--pc);display:grid;place-items:center}
+.pm-choice .pm-cbadge svg{width:30px;height:30px}
+.pop-btn .pm-ico{width:30px;height:30px;vertical-align:-6px;margin-right:6px}
+.pm-stars{display:flex;gap:2px;margin-top:3px}.pm-stars svg{width:18px;height:18px}
+.pm-lk{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:16px;background:var(--paper);border-radius:28px;padding:22px}
+.pm-lk>svg{width:80px;height:80px}
+.pm-lk-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.pm-lk-m{position:relative;width:clamp(120px,18vw,170px);border-radius:16px;overflow:visible}
+.pm-lk-m .pm-thumb{border-radius:16px}
+.pm-lk-m .pm-star{width:40px;height:40px;top:-10px;right:-8px}
+.pm-lk-m.todo .pm-thumb{box-shadow:0 0 0 4px #ff5fa2;animation:pmpulse 1.4s ease-in-out infinite}
 #pm-wrap{position:relative;flex:1 1 auto;min-height:0}
-#pmStage{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:block;border-radius:22px;box-shadow:0 6px 0 rgba(59,42,99,.16);touch-action:none;-webkit-touch-callout:none;overflow:hidden}
+#pmStage{position:absolute;left:50%;top:0;transform:translateX(-50%);display:block;border-radius:22px;box-shadow:0 6px 0 rgba(59,42,99,.16);touch-action:none;-webkit-touch-callout:none;overflow:hidden}
 #pmStage *{pointer-events:none}
 #pmPad{position:absolute;left:12px;bottom:12px;width:clamp(150px,min(21vw,30vh),210px);aspect-ratio:1;border-radius:50%;background:rgba(255,255,255,.55);box-shadow:0 5px 0 rgba(59,42,99,.18),inset 0 0 0 4px rgba(255,255,255,.9);touch-action:none;-webkit-touch-callout:none;z-index:2}
 .pm-arw{position:absolute;width:34%;height:34%;border-radius:22px;background:#fff;box-shadow:0 4px 0 #d8cdf2;display:grid;place-items:center;pointer-events:none;transition:transform .08s}
@@ -677,8 +707,8 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
   <section class="screen" id="pmplay" hidden>
     <div class="topbar">
       <button class="round-btn" data-go="pmmap" aria-label="Mission map"><svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7" stroke="#ff5fa2" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <h2 id="pmTitle"></h2>
-      <div class="pm-pips" id="pmPips"></div>
+      <div class="pm-goalbar"><div class="pm-pips" id="pmPips"></div><div class="pm-carry" id="pmCarry" hidden></div></div>
+      <button class="round-btn" id="pmSay" aria-label="Hear the mission"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4Z" fill="#8b5cf6"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="#8b5cf6" stroke-width="2" fill="none" stroke-linecap="round"/></svg></button>
     </div>
     <div id="pm-wrap"><svg id="pmStage" viewBox="0 0 200 125" role="img" aria-label="Mission"></svg>
       <div id="pmPad" role="group" aria-label="Direction pad"><span class="pm-arw u"></span><span class="pm-arw r"></span><span class="pm-arw d"></span><span class="pm-arw l"></span><span class="pm-dot"></span></div></div>
@@ -2853,14 +2883,20 @@ let pmAreaSel=null;
 function renderPmMap(){
   if(!pmAreaSel||!pmUnlocked(pmAreaSel)){const open=PM_AREAS.filter(a=>pmUnlocked(a.id));pmAreaSel=(open.find(a=>!pmAreaDone(a.id))||open[open.length-1]).id}
   document.getElementById("pmAreas").innerHTML=PM_AREAS.map(a=>{const ms=pmList(a.id),n=ms.filter(m=>pmDone[m.id]).length,lk=!pmUnlocked(a.id);
-    return `<button class="pm-area${a.id===pmAreaSel?" sel":""}${lk?" locked":""}" data-a="${a.id}"><svg viewBox="0 0 ${PM_W} ${PM_H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${pmBg(a.bg)}</svg><span>${a.name}<small>${lk?"🔒 Locked":`${n}/${ms.length} stars`}</small></span></button>`}).join("");
+    return `<button class="pm-area${a.id===pmAreaSel?" sel":""}${lk?" locked":""}" data-a="${a.id}"><svg viewBox="0 0 ${PM_WW} ${PM_WH}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${pmBg(a.bg)}</svg><span>${a.name}<span class="pm-stars">${lk?PM_LOCK:ms.map(m=>pmDone[m.id]?starSVG:PM_STAR0).join("")}</span></span></button>`}).join("");
   const list=document.getElementById("pmList");
   if(!pmUnlocked(pmAreaSel)){const i=PM_AREAS.findIndex(x=>x.id===pmAreaSel);
-    list.innerHTML=`<p class="pm-locked">Finish every mission in ${PM_AREAS[i-1].name} to open ${PM_AREAS[i].name}!</p>`;return}
+    list.innerHTML=`<div class="pm-lk">${PM_LOCK}<div class="pm-lk-row">${pmList(PM_AREAS[i-1].id).map(m=>`<button class="pm-lk-m${pmDone[m.id]?"":" todo"}" data-back="${m.area}" aria-label="${m.title}"><span class="pm-thumb">${pmThumb(m)}</span>${pmDone[m.id]?`<span class="pm-star">${starSVG}</span>`:""}</button>`).join("")}</div></div>`;return}
   list.innerHTML=pmList(pmAreaSel).map(m=>`<button class="pm-mis${pmDone[m.id]?" done":""}" data-m="${m.id}"><span class="pm-thumb">${pmThumb(m)}</span><span class="pm-mt"><span class="pm-pup">${art(BY_ID[m.pup])}</span>${m.title}</span>${pmDone[m.id]?`<span class="pm-star">${starSVG}</span>`:""}</button>`).join("")}
 document.getElementById("pmAreas").onclick=e=>{const b=e.target.closest(".pm-area");if(!b)return;audio();sfx.flip();pmAreaSel=b.dataset.a;
   const a=pmArea(pmAreaSel);say(pmUnlocked(a.id)?a.name:`${a.name} is locked. Finish the missions before it first!`);renderPmMap()};
-document.getElementById("pmList").onclick=e=>{const b=e.target.closest(".pm-mis");if(!b)return;audio();pmAlert(PM_BY_ID[b.dataset.m])};
+document.getElementById("pmList").onclick=e=>{const k=e.target.closest(".pm-lk-m");if(k){audio();sfx.flip();pmAreaSel=k.dataset.back;renderPmMap();say("Finish these missions first!");return}
+  const b=e.target.closest(".pm-mis");if(!b)return;audio();pmAlert(PM_BY_ID[b.dataset.m])};
+const PM_LOCK=`<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2.5" fill="#b9a3ef"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="#b9a3ef" stroke-width="2.6" fill="none"/><circle cx="12" cy="15.5" r="1.8" fill="#fff"/></svg>`;
+const PM_STAR0=`<svg viewBox="0 0 20 20" aria-hidden="true">${icon("star",10,10,19,"#e4dcf6")}</svg>`;
+const PM_ICO_NEXT=`<svg class="pm-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14M12 5l7 7-7 7" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const PM_ICO_MAP=`<svg class="pm-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2Z" fill="#fff"/><path d="M9 4v14M15 6v14" stroke="#3b9dff" stroke-width="1.6"/></svg>`;
+const pmIcon=(k,i=0)=>`<svg viewBox="-9 -11 18 19" aria-hidden="true"><g stroke="${INK}" stroke-width=".6" stroke-linejoin="round" stroke-linecap="round">${pmSpr(k,i)}</g></svg>`;
 document.getElementById("btnPups").onclick=()=>{audio();sfx.flip();say("Rescue Pups! Ready for a mission?");show("pmmap")};
 
 /* alert: pick the right pup */
@@ -2869,30 +2905,39 @@ function pmAlert(m){const c=BY_ID[m.pup];
   const others=shuffle(PUPS.filter(p=>p.id!==m.pup&&PV[p.id])).slice(0,2);
   const pick=shuffle([c,...others]);
   sfx.magic();setTimeout(()=>{tone(880,0,.25,"square",.06);tone(660,.3,.25,"square",.06);tone(880,.6,.25,"square",.06)},0);
-  const p=openOverlay(`<div class="pm-siren" aria-hidden="true"></div><h2>${m.title}</h2><p class="hint">${m.alert}</p>
-    <p class="pm-ask">Who can help? Look for the <span class="pm-badge"><svg viewBox="0 0 20 20">${icon(c.icon,10,10,18,c.team)}</svg></span> badge!</p>
-    <div class="pm-choices">${pick.map(x=>`<button class="pm-choice" data-p="${x.id}" style="--pc:${x.team}">${pmMini(x.id)}<span>${x.name}</span></button>`).join("")}</div>
-    <button class="pop-btn alt pm-later" id="pmLater">Back to map</button>`);
-  say(m.alert+" Who can help?");
+  const badge=x=>`<svg viewBox="0 0 20 20" aria-hidden="true">${icon(x.icon,10,10,18,x.team)}</svg>`;
+  const p=openOverlay(`<div class="pm-siren" aria-hidden="true"></div>
+    <div class="pm-al-top"><button class="round-btn pm-hear" id="pmHear" aria-label="Hear it again">${speaker}</button><h2>${m.title}</h2></div>
+    <div class="pm-al-pic">${pmThumb(m)}</div>
+    <div class="pm-find" aria-label="Find the pup with this badge"><span class="pm-badge">${badge(c)}</span><svg class="pm-down" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v14M5 12l7 7 7-7" stroke="#ff5fa2" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="pm-choices">${pick.map(x=>`<button class="pm-choice" data-p="${x.id}" style="--pc:${x.team}"><span class="pm-cbadge">${badge(x)}</span>${pmMini(x.id)}<span>${x.name}</span></button>`).join("")}</div>
+    <button class="pop-btn alt pm-later" id="pmLater">${PM_ICO_MAP}Map</button>`);
+  const speak=f=>say(m.alert+" Who can help? Find the pup with this badge!",undefined,f);speak(false);
+  p.querySelector("#pmHear").onclick=()=>{audio();speak(true)};
   p.querySelector("#pmLater").onclick=()=>{sfx.flip();closeOverlay()};
   p.querySelector(".pm-choices").onclick=e=>{const b=e.target.closest(".pm-choice");if(!b)return;const x=BY_ID[b.dataset.p];
-    if(x.id!==m.pup){sfx.miss();b.classList.remove("no");void b.offsetWidth;b.classList.add("no");say(`${x.name} is the ${x.role}. Try another pup!`);return}
-    sfx.match();say(`${x.name} is on the way! ${m.goal}`);closeOverlay();pmStart(m)}}
+    if(x.id!==m.pup){sfx.miss();b.classList.remove("no");void b.offsetWidth;b.classList.add("no");say(`That's ${x.name}. Find the pup with the same badge!`,undefined,true);return}
+    sfx.match();say(`${x.name} is on the way! ${m.goal} Touch where you want to go!`);closeOverlay();pmStart(m)}}
 
 /* play: steer with the direction pad (or arrow keys); the camera follows the pup */
 const pmStage=document.getElementById("pmStage"),pmPad=document.getElementById("pmPad");
 let pmS=null,pmView={vw:200,vh:125},pmPadDir=[0,0];const pmKeys={};
 const PM_CAP=3;
 function pmLayout(){const r=document.getElementById("pm-wrap").getBoundingClientRect();if(!r.width||!r.height)return;
-  const s=Math.max(2,Math.min(r.width/185,r.height/112));
+  const s=Math.max(2,Math.min(r.width/275,r.height/165));
   pmView={vw:Math.min(PM_WW,r.width/s),vh:Math.min(PM_WH,r.height/s)};
-  pmStage.style.width=Math.floor(pmView.vw*s)+"px";pmStage.style.height=Math.floor(pmView.vh*s)+"px";if(pmS)pmDraw()}
+  const sh=Math.floor(pmView.vh*s);pmStage.style.width=Math.floor(pmView.vw*s)+"px";pmStage.style.height=sh+"px";
+  /* tall screens (iPad held upright): the map is shorter than the space, so the pad gets its own spot under it */
+  const gap=r.height-sh,big=Math.min(240,gap-24,r.width*.42);
+  if(big>=150){Object.assign(pmPad.style,{width:big+"px",left:"50%",transform:"translateX(-50%)",bottom:Math.max(8,(gap-big)/2)+"px"})}
+  else{Object.assign(pmPad.style,{width:"",left:"",transform:"",bottom:""})}
+  if(pmS)pmDraw()}
 function pmStart(m){if(pmS&&pmS.raf)cancelAnimationFrame(pmS.raf);
   const L=pmGen(m),fly=m.pup==="breeze";
   const items=L.items.map(([x,y],i)=>({i,x,y,hx:x,hy:y,done:false,prog:0,state:"wait"}));
   const movers=L.movers.map(v=>({...v}));
-  pmS={m,items,movers,obs:L.obs.filter(o=>o.air===fly),x:m.start[0],y:m.start[1],face:1,trail:[],carried:[],home:0,last:0,idle:0,stun:0,bx:0,by:0,oops:0,full:0,tick:0,over:false,fly,speed:PM_SPEED[m.pup]||52,raf:0};
-  document.getElementById("pmTitle").textContent=m.goal;
+  pmS={m,items,movers,obs:L.obs.filter(o=>o.air===fly),x:m.start[0],y:m.start[1],face:1,trail:[],carried:[],home:0,last:0,idle:0,stun:0,touch:null,goto:null,bx:0,by:0,oops:0,full:0,tick:0,over:false,fly,speed:PM_SPEED[m.pup]||52,raf:0};
+  document.getElementById("pmSay").onclick=()=>{audio();say(m.goal+" "+(m.mode==="gather"?"You can lead three at a time, then bring them home.":"")+" Touch where you want to go!",undefined,true)};
   pmStage.setAttribute("viewBox",`0 0 ${pmView.vw} ${pmView.vh}`);
   pmStage.innerHTML=`<defs><radialGradient id="pmHoleG"><stop offset=".55" stop-color="#000"/><stop offset="1" stop-color="#fff"/></radialGradient>
       <mask id="pmDarkM" maskUnits="userSpaceOnUse" x="0" y="0" width="${PM_WW}" height="${PM_WH}"><rect width="${PM_WW}" height="${PM_WH}" fill="#fff"/><circle id="pmHole" r="38" fill="url(#pmHoleG)"/></mask></defs>
@@ -2913,7 +2958,12 @@ function pmStart(m){if(pmS&&pmS.raf)cancelAnimationFrame(pmS.raf);
   pmPips();show("pmplay");pmDraw();pmS.raf=requestAnimationFrame(pmFrame)}
 /* flying obstacles (storm clouds) draw above the pup */
 const S_AIR=m=>pmGen(m).obs.filter(o=>o.air).map(o=>pmPut(pmSpr(o.k),o.x,o.y,o.s)).join("");
-function pmPips(){const d=pmS.items.filter(i=>i.done).length;document.getElementById("pmPips").innerHTML=pmS.items.map((_,i)=>`<i class="${i<d?"on":""}"></i>`).join("")}
+/* top bar: one picture per goal (turns into a star), and for gathering missions the 3 spots behind the pup and home */
+function pmPips(){const S=pmS,d=S.items.filter(i=>i.done).length;
+  document.getElementById("pmPips").innerHTML=S.items.map((_,i)=>i<d?`<i class="on">${starSVG}</i>`:`<i>${pmIcon(S.m.kind,i)}</i>`).join("");pmCarryHud()}
+function pmCarryHud(){const S=pmS,el=document.getElementById("pmCarry");el.hidden=S.m.mode!=="gather";if(el.hidden)return;
+  const full=S.carried.length>=PM_CAP||(S.carried.length&&!S.items.some(i=>i.state==="wait"));el.classList.toggle("full",!!full);
+  el.innerHTML=[0,1,2].map(k=>{const it=S.carried[k];return `<i class="${it?"on":""}">${it?pmIcon(S.m.kind,it.i):""}</i>`}).join("")+`<b aria-hidden="true">&#10140;</b><span class="pm-home">${pmIcon(S.m.dest[2])}</span>`}
 function pmBurst(x,y){const g=document.createElementNS("http://www.w3.org/2000/svg","g");g.setAttribute("transform",`translate(${pmN(x)} ${pmN(y)})`);g.innerHTML=PM_BURST;
   pmStage.querySelector("#pmFxTop").appendChild(g);setTimeout(()=>g.remove(),700)}
 function pmProgress(it,x,y){it.done=true;pmS.idle=0;pmHint(false);pmBurst(x,y);pmPips();
@@ -2939,9 +2989,15 @@ const PM_KEYMAP={ArrowUp:"u",ArrowDown:"d",ArrowLeft:"l",ArrowRight:"r",w:"u",s:
 addEventListener("keydown",e=>{const k=PM_KEYMAP[e.key];if(k&&!document.getElementById("pmplay").hidden&&document.getElementById("overlay").hidden){pmKeys[k]=true;e.preventDefault()}});
 addEventListener("keyup",e=>{const k=PM_KEYMAP[e.key];if(k)pmKeys[k]=false});
 addEventListener("blur",()=>{for(const k in pmKeys)pmKeys[k]=false});
+/* finger on the map: the pup drives toward your finger while you hold it; let go and it finishes driving to that spot */
+function pmWorldAt(cx,cy){const ctm=pmStage.getScreenCTM();if(!ctm)return null;const pt=pmStage.createSVGPoint();pt.x=cx;pt.y=cy;const q=pt.matrixTransform(ctm.inverse());return [q.x,q.y]}
+pmStage.addEventListener("pointerdown",e=>{if(!pmS||pmS.over||pmS.touch)return;e.preventDefault();audio();try{pmStage.setPointerCapture(e.pointerId)}catch(_){}pmS.touch={id:e.pointerId,cx:e.clientX,cy:e.clientY};pmS.goto=null});
+pmStage.addEventListener("pointermove",e=>{const t=pmS&&pmS.touch;if(t&&e.pointerId===t.id){t.cx=e.clientX;t.cy=e.clientY}});
+function pmStageUp(e){const t=pmS&&pmS.touch;if(!t||e.pointerId!==t.id)return;pmS.goto=pmWorldAt(t.cx,t.cy);pmS.touch=null}
+["pointerup","pointercancel","lostpointercapture"].forEach(t=>pmStage.addEventListener(t,pmStageUp));
 function pmBump(S,ox,oy,md){let ex=S.x-ox,ey=S.y-oy,ed=Math.hypot(ex,ey);if(ed<.01){ex=0;ey=1;ed=1}
   S.x=ox+ex/ed*md;S.y=oy+ey/ed*md;if(S.stun>0)return;
-  S.bx=ex/ed*70;S.by=ey/ed*70;S.stun=.5;tone(220,0,.1,"square",.07);tone(150,.09,.16,"square",.06);
+  S.bx=ex/ed*70;S.by=ey/ed*70;S.stun=.5;S.goto=null;tone(220,0,.1,"square",.07);tone(150,.09,.16,"square",.06);
   S.body.classList.remove("pm-oops");void S.body.getBBox();S.body.classList.add("pm-oops");
   if(S.oops<=0){say(["Oops!","Uh oh, bump!","Whoa, careful!"][Math.floor(Math.random()*3)]);S.oops=4}}
 function pmFrame(t){const S=pmS;if(!S)return;if(document.getElementById("pmplay").hidden){S.raf=0;return}
@@ -2954,7 +3010,13 @@ function pmFrame(t){const S=pmS;if(!S)return;if(document.getElementById("pmplay"
     dx=Math.max(-1,Math.min(1,dx));dy=Math.max(-1,Math.min(1,dy));const dl=Math.hypot(dx,dy);
     let vx=0,vy=0;
     if(S.stun>0){S.stun-=dt;vx=S.bx;vy=S.by;S.bx*=.88;S.by*=.88}
-    else if(dl){vx=dx/dl*S.speed;vy=dy/dl*S.speed;if(dx)S.face=dx>0?1:-1;S.idle=Math.min(S.idle,4)}
+    else if(dl){S.goto=null;vx=dx/dl*S.speed;vy=dy/dl*S.speed;if(dx)S.face=dx>0?1:-1;S.idle=Math.min(S.idle,4)}
+    else{const aim=S.touch?pmWorldAt(S.touch.cx,S.touch.cy):S.goto;
+      if(aim){let ax=aim[0]-S.x,ay=aim[1]-S.y;const ad=Math.hypot(ax,ay);
+        /* aiming at a fire/rock/etc: park beside it instead of on top of it */
+        const work=m.mode==="hold"&&S.items.find(i=>!i.done&&Math.hypot(i.x-aim[0],i.y-aim[1])<16);
+        if(ad<3||(work&&Math.hypot(work.x-S.x,work.y-S.y)<20)){if(!S.touch)S.goto=null}
+        else{const sp=S.speed*Math.min(1,ad/8);vx=ax/ad*sp;vy=ay/ad*sp;if(Math.abs(ax)>2)S.face=ax>0?1:-1;S.idle=Math.min(S.idle,4)}}}
     if(vx||vy){const zoneOk=(x,y)=>S.fly||pmZoneOk(m,x,y,6);let nx=S.x+vx*dt,ny=S.y+vy*dt;
       if(zoneOk(nx,ny)){S.x=nx;S.y=ny}else if(zoneOk(nx,S.y))S.x=nx;else if(zoneOk(S.x,ny))S.y=ny}
     S.x=Math.max(8,Math.min(PM_WW-8,S.x));S.y=Math.max(10,Math.min(PM_WH-8,S.y));
@@ -2970,12 +3032,12 @@ function pmFrame(t){const S=pmS;if(!S)return;if(document.getElementById("pmplay"
         if(best.prog>=1){S.els[best.i].style.display="none";pmProgress(best,best.x,best.y)}}}
     else{S.items.forEach(it=>{if(it.state==="wait"&&Math.hypot(it.x-S.x,it.y-S.y)<15){
         if(S.carried.length>=PM_CAP){if(S.full<=0){say("You can lead three at a time. Bring them home first!");S.full=6}return}
-        it.state="follow";S.carried.push(it);S.idle=0;if(S.hinting)pmHint(false);tone(660,0,.12,"triangle",.12);tone(990,.1,.16,"triangle",.12)}});
+        it.state="follow";S.carried.push(it);pmCarryHud();S.idle=0;if(S.hinting)pmHint(false);tone(660,0,.12,"triangle",.12);tone(990,.1,.16,"triangle",.12)}});
       if(S.carried.length&&Math.hypot(m.dest[0]-S.x,m.dest[1]-S.y)<24){S.carried.forEach(it=>{const k=S.home++,a=-Math.PI/2+k*.9,rr=12+Math.floor(k/7)*6;
-          it.state="home";it.hx=m.dest[0]+Math.cos(a)*rr;it.hy=m.dest[1]+Math.sin(a)*rr*.6+2;pmProgress(it,it.hx,it.hy)});S.carried=[]}}
+          it.state="home";it.hx=m.dest[0]+Math.cos(a)*rr;it.hy=m.dest[1]+Math.sin(a)*rr*.6+2;pmProgress(it,it.hx,it.hy)});S.carried=[];pmCarryHud()}}
     if(working){const nx=S.x+S.face*15,ny=S.y-6;S.fx.setAttribute("d",`M${pmN(nx)} ${pmN(ny)}Q${pmN((nx+working.x)/2)} ${pmN(Math.min(ny,working.y)-10)} ${pmN(working.x)} ${pmN(working.y)}`);S.fx.setAttribute("opacity","1")}
     else S.fx.setAttribute("opacity","0");
-    S.idle+=dt;if(S.idle>7&&!S.hinting)pmHint(true)}
+    S.idle+=dt;if(S.idle>5&&!S.hinting)pmHint(true)}
   else S.fx.setAttribute("opacity","0");
   S.carried.forEach((it,k)=>{const p=S.trail[Math.max(0,S.trail.length-1-(k+1)*14)]||[S.x,S.y];it.x+=(p[0]-it.x)*Math.min(1,dt*10);it.y+=(p[1]+2-it.y)*Math.min(1,dt*10)});
   S.items.forEach(it=>{if(it.state==="home"){it.x+=(it.hx-it.x)*Math.min(1,dt*8);it.y+=(it.hy-it.y)*Math.min(1,dt*8)}});
@@ -2986,7 +3048,7 @@ function pmDraw(){const S=pmS,{vw,vh}=pmView;
   S.veh.setAttribute("transform",`translate(${pmN(S.x)} ${pmN(S.y)})`);S.flip.setAttribute("transform",`scale(${S.face} 1)`);
   if(S.hole){S.hole.setAttribute("cx",pmN(S.x+S.face*6));S.hole.setAttribute("cy",pmN(S.y-4))}
   S.items.forEach((it,i)=>{const el=S.els[i];if(el.style.display==="none")return;const s=S.m.mode==="hold"?1-it.prog*.55:it.state==="follow"?.8:1;
-    el.setAttribute("transform",`translate(${pmN(it.x)} ${pmN(it.y)}) scale(${pmN(s*1.3)})`)});
+    el.setAttribute("transform",`translate(${pmN(it.x)} ${pmN(it.y)}) scale(${pmN(s*1.5)})`)});
   S.movers.forEach((v,i)=>{S.mvEls[i].setAttribute("transform",`translate(${pmN(v.x)} ${pmN(v.y)}) scale(${pmN((v.face||1)*PM_MV[v.k][1])} ${PM_MV[v.k][1]})`)});
   const nt=S.over?null:pmNext();let show=false;
   if(nt){const m=10,inView=nt[0]>cx+m&&nt[0]<cx+vw-m&&nt[1]>cy+m&&nt[1]<cy+vh-m;
@@ -3003,12 +3065,21 @@ function pmWin(){const m=pmS.m,c=BY_ID[m.pup],first=!pmDone[m.id];
   sfx.win();confetti();
   const extra=all&&first?"You finished every mission! You are a super rescue hero!":opened?`You opened ${opened.name}!`:"";
   say(`Mission complete! ${m.done} ${extra}`);
-  const p=openOverlay(`<div class="pm-win-art">${pmMini(m.pup)}</div><div class="stars3">${starSVG}</div><h2>Mission complete!</h2><p class="hint">${m.done}</p>${extra?`<p class="pm-ask">${extra}</p>`:""}
-    <div class="pop-row">${next?`<button class="pop-btn" id="pmNext">Next mission</button>`:""}<button class="pop-btn alt" id="pmMap">Mission map</button></div>`);
+  const p=openOverlay(`<div class="pm-win-art">${pmMini(m.pup)}</div><div class="stars3">${starSVG}${starSVG}${starSVG}</div><div class="pm-al-top"><button class="round-btn pm-hear" id="pmHear" aria-label="Hear it again">${speaker}</button><h2>You did it!</h2></div>
+    <div class="pop-row">${next?`<button class="pop-btn" id="pmNext">${PM_ICO_NEXT}Next</button>`:""}<button class="pop-btn alt" id="pmMap">${PM_ICO_MAP}Map</button></div>`);
+  p.querySelector("#pmHear").onclick=()=>{audio();say(`${m.done} ${extra}`,undefined,true)};
   if(opened)pmAreaSel=opened.id;
   const nb=p.querySelector("#pmNext");if(nb)nb.onclick=()=>{closeOverlay();pmAreaSel=next.area;show("pmmap");pmAlert(next)};
   p.querySelector("#pmMap").onclick=()=>{closeOverlay();show("pmmap")}}
 document.getElementById("artPups").innerHTML=`<svg viewBox="-27 -31 54 50" aria-hidden="true">${pmVeh("blaze")}</svg>`;
+
+/* ---------- no zooming (double-tap or pinch) on the iPad ---------- */
+(function(){let lastEnd=0;
+  document.addEventListener("touchend",e=>{const now=Date.now(),quick=now-lastEnd<350;lastEnd=now;
+    if(quick&&e.cancelable&&!e.target.closest("button,input,textarea,select,a,label,svg,canvas,#pmPad"))e.preventDefault()},{passive:false});
+  document.addEventListener("dblclick",e=>e.preventDefault(),{passive:false});
+  ["gesturestart","gesturechange","gestureend"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
+  document.addEventListener("touchmove",e=>{if(e.touches.length>1&&e.cancelable)e.preventDefault()},{passive:false});})();
 
 /* ---------- boot ---------- */
 renderSoundBtn();renderVoiceBtn();renderHome();
