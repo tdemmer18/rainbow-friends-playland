@@ -447,6 +447,7 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
 .pm-al-top{display:flex;align-items:center;gap:12px;justify-content:center}
 .pm-al-top h2{font-size:clamp(24px,3.6vw,32px)}
 .pm-hear{width:58px;height:58px;background:#efe7ff}
+body.muted .pm-hear,body.muted #pmSay{visibility:hidden}
 .pm-al-pic{width:100%;aspect-ratio:2/1;border-radius:22px;overflow:hidden;box-shadow:0 0 0 4px #ffd83b}
 .pm-al-pic svg{width:100%;height:100%;display:block}
 .pm-find{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:26px}
@@ -1780,7 +1781,7 @@ const KEY="rainbowRescue.collected",SKEY="rainbowRescue.sound";
 function load(){try{const v=JSON.parse(localStorage.getItem(KEY)||"[]");return Array.isArray(v)?v.filter(id=>BY_ID[id]):[]}catch(e){return []}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(collected))}catch(e){}}
 let collected=load();
-let soundOn=false;try{soundOn=localStorage.getItem(SKEY)==="on"}catch(e){}
+let soundOn=false;/* always starts muted when the app opens; the sound button turns it on for this visit */
 const VKEY="rainbowRescue.voice";let voiceOn=true;try{voiceOn=localStorage.getItem(VKEY)!=="off"}catch(e){}
 
 /* ---------- sound + voice ---------- */
@@ -1801,7 +1802,7 @@ function say(text,rate,force){if((!soundOn||!voiceOn)&&!force)return;try{const s
 function renderSoundBtn(){const h=soundOn
   ?`<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4Z" fill="#8b5cf6"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="#8b5cf6" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`
   :`<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4Z" fill="#b9add6"/><path d="M16 9l5 6M21 9l-5 6" stroke="#b9add6" stroke-width="2" stroke-linecap="round"/></svg>`;
-  document.querySelectorAll(".sound-btn").forEach(b=>b.innerHTML=h);}
+  document.querySelectorAll(".sound-btn").forEach(b=>b.innerHTML=h);document.body.classList.toggle("muted",!soundOn);}
 
 /* ---------- confetti ---------- */
 const cv=document.getElementById("confetti"),cx=cv.getContext("2d");let parts=[],raf=0;
@@ -1827,7 +1828,7 @@ function show(id){screens.forEach(s=>document.getElementById(s).hidden=s!==id);i
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>{audio();show(b.dataset.go)}));
 document.getElementById("btnBook").onclick=()=>{audio();sfx.flip();show("book")};
 document.getElementById("btnBookPlay").onclick=()=>{audio();sfx.flip();show("home")};
-document.querySelectorAll(".sound-btn").forEach(b=>b.onclick=()=>{soundOn=!soundOn;try{localStorage.setItem(SKEY,soundOn?"on":"off")}catch(e){}renderSoundBtn();if(soundOn){audio();sfx.flip()}else{try{speechSynthesis.cancel()}catch(e){}}});
+document.querySelectorAll(".sound-btn").forEach(b=>b.onclick=()=>{soundOn=!soundOn;renderSoundBtn();if(soundOn){audio();sfx.flip()}else{try{speechSynthesis.cancel()}catch(e){}}});
 function renderVoiceBtn(){const h=voiceOn
   ?`<svg viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-9l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" fill="#ff5fa2"/><path d="M7 9.5h10M7 12.5h7" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>`
   :`<svg viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-9l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" fill="#d8cdf2"/><path d="M4 3l16 18" stroke="#b9add6" stroke-width="2.2" stroke-linecap="round"/></svg>`;
@@ -2903,11 +2904,11 @@ function pmAlert(m){const c=BY_ID[m.pup];
     <div class="pm-find" aria-label="Find the pup with this badge"><span class="pm-badge">${badge(c)}</span><svg class="pm-down" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v14M5 12l7 7 7-7" stroke="#ff5fa2" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div class="pm-choices">${pick.map(x=>`<button class="pm-choice" data-p="${x.id}" style="--pc:${x.team}"><span class="pm-cbadge">${badge(x)}</span>${pmMini(x.id)}<span>${x.name}</span></button>`).join("")}</div>
     <button class="pop-btn alt pm-later" id="pmLater">${PM_ICO_MAP}Map</button>`);
-  const speak=f=>say(m.alert+" Who can help? Find the pup with this badge!",undefined,f);speak(false);
-  p.querySelector("#pmHear").onclick=()=>{audio();speak(true)};
+  const speak=()=>say(m.alert+" Who can help? Find the pup with this badge!");speak();
+  p.querySelector("#pmHear").onclick=()=>{audio();speak()};
   p.querySelector("#pmLater").onclick=()=>{sfx.flip();closeOverlay()};
   p.querySelector(".pm-choices").onclick=e=>{const b=e.target.closest(".pm-choice");if(!b)return;const x=BY_ID[b.dataset.p];
-    if(x.id!==m.pup){sfx.miss();b.classList.remove("no");void b.offsetWidth;b.classList.add("no");say(`That's ${x.name}. Find the pup with the same badge!`,undefined,true);return}
+    if(x.id!==m.pup){sfx.miss();b.classList.remove("no");void b.offsetWidth;b.classList.add("no");say(`That's ${x.name}. Find the pup with the same badge!`);return}
     sfx.match();say(`${x.name} is on the way! ${m.goal} Touch where you want to go!`);closeOverlay();pmStart(m)}}
 
 /* play: steer with the direction pad (or arrow keys); the camera follows the pup */
@@ -2925,7 +2926,7 @@ function pmStart(m){if(pmS&&pmS.raf)cancelAnimationFrame(pmS.raf);
   const items=L.items.map(([x,y],i)=>({i,x,y,hx:x,hy:y,done:false,prog:0,state:"wait"}));
   const movers=L.movers.map(v=>({...v}));
   pmS={m,items,movers,obs:L.obs.filter(o=>o.air===fly),x:m.start[0],y:m.start[1],face:1,trail:[],carried:[],home:0,last:0,idle:0,stun:0,touch:null,goto:null,bx:0,by:0,oops:0,full:0,tick:0,over:false,fly,speed:PM_SPEED[m.pup]||52,raf:0};
-  document.getElementById("pmSay").onclick=()=>{audio();say(m.goal+" "+(m.mode==="gather"?"You can lead three at a time, then bring them home.":"")+" Touch where you want to go!",undefined,true)};
+  document.getElementById("pmSay").onclick=()=>{audio();say(m.goal+" "+(m.mode==="gather"?"You can lead three at a time, then bring them home.":"")+" Touch where you want to go!")};
   pmStage.setAttribute("viewBox",`0 0 ${pmView.vw} ${pmView.vh}`);
   pmStage.innerHTML=`<defs><radialGradient id="pmHoleG"><stop offset=".55" stop-color="#000"/><stop offset="1" stop-color="#fff"/></radialGradient>
       <mask id="pmDarkM" maskUnits="userSpaceOnUse" x="0" y="0" width="${PM_WW}" height="${PM_WH}"><rect width="${PM_WW}" height="${PM_WH}" fill="#fff"/><circle id="pmHole" r="38" fill="url(#pmHoleG)"/></mask></defs>
@@ -3045,7 +3046,7 @@ function pmWin(){const m=pmS.m,c=BY_ID[m.pup],first=!pmDone[m.id];
   say(`Mission complete! ${m.done} ${extra}`);
   const p=openOverlay(`<div class="pm-win-art">${pmMini(m.pup)}</div><div class="stars3">${starSVG}${starSVG}${starSVG}</div><div class="pm-al-top"><button class="round-btn pm-hear" id="pmHear" aria-label="Hear it again">${speaker}</button><h2>You did it!</h2></div>
     <div class="pop-row">${next?`<button class="pop-btn" id="pmNext">${PM_ICO_NEXT}Next</button>`:""}<button class="pop-btn alt" id="pmMap">${PM_ICO_MAP}Map</button></div>`);
-  p.querySelector("#pmHear").onclick=()=>{audio();say(`${m.done} ${extra}`,undefined,true)};
+  p.querySelector("#pmHear").onclick=()=>{audio();say(`${m.done} ${extra}`)};
   if(opened)pmAreaSel=opened.id;
   const nb=p.querySelector("#pmNext");if(nb)nb.onclick=()=>{closeOverlay();pmAreaSel=next.area;show("pmmap");pmAlert(next)};
   p.querySelector("#pmMap").onclick=()=>{closeOverlay();show("pmmap")}}
