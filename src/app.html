@@ -451,16 +451,8 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
 .pm-lk-m .pm-star{width:40px;height:40px;top:-10px;right:-8px}
 .pm-lk-m.todo .pm-thumb{box-shadow:0 0 0 4px #ff5fa2;animation:pmpulse 1.4s ease-in-out infinite}
 #pm-wrap{position:relative;flex:1 1 auto;min-height:0}
-#pmStage{position:absolute;left:50%;top:0;transform:translateX(-50%);display:block;border-radius:22px;box-shadow:0 6px 0 rgba(59,42,99,.16);touch-action:none;-webkit-touch-callout:none;overflow:hidden}
+#pmStage{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:block;border-radius:22px;box-shadow:0 6px 0 rgba(59,42,99,.16);touch-action:none;-webkit-touch-callout:none;overflow:hidden}
 #pmStage *{pointer-events:none}
-#pmPad{position:absolute;left:12px;bottom:12px;width:clamp(150px,min(21vw,30vh),210px);aspect-ratio:1;border-radius:50%;background:rgba(255,255,255,.55);box-shadow:0 5px 0 rgba(59,42,99,.18),inset 0 0 0 4px rgba(255,255,255,.9);touch-action:none;-webkit-touch-callout:none;z-index:2}
-.pm-arw{position:absolute;width:34%;height:34%;border-radius:22px;background:#fff;box-shadow:0 4px 0 #d8cdf2;display:grid;place-items:center;pointer-events:none;transition:transform .08s}
-.pm-arw::after{content:"";width:0;height:0;border:13px solid transparent;border-bottom:18px solid #ff5fa2;margin-top:-14px}
-.pm-arw.u{left:33%;top:2%}.pm-arw.d{left:33%;bottom:2%}.pm-arw.l{left:2%;top:33%}.pm-arw.r{right:2%;top:33%}
-.pm-arw.r::after{transform:rotate(90deg)}.pm-arw.d::after{transform:rotate(180deg)}.pm-arw.l::after{transform:rotate(-90deg)}
-.pm-dot{position:absolute;left:41%;top:41%;width:18%;height:18%;border-radius:50%;background:#fff;opacity:.8;pointer-events:none}
-#pmPad[data-dir~="u"] .u,#pmPad[data-dir="ul"] .u,#pmPad[data-dir="ur"] .u,#pmPad[data-dir="d"] .d,#pmPad[data-dir="dl"] .d,#pmPad[data-dir="dr"] .d,
-#pmPad[data-dir="l"] .l,#pmPad[data-dir="ul"] .l,#pmPad[data-dir="dl"] .l,#pmPad[data-dir="r"] .r,#pmPad[data-dir="ur"] .r,#pmPad[data-dir="dr"] .r{background:#fff6c2;transform:translateY(3px) scale(.96);box-shadow:0 1px 0 #d8cdf2}
 .pm-oops{animation:pmoops .5s ease-in-out;transform-box:fill-box;transform-origin:50% 100%}
 @keyframes pmoops{20%{rotate:-14deg}45%{rotate:12deg}70%{rotate:-6deg}}
 .pm-flap{animation:pmflap .3s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
@@ -696,7 +688,6 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.4vw,40px);m
       <button class="round-btn" id="pmSay" aria-label="Hear the mission"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4Z" fill="#8b5cf6"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="#8b5cf6" stroke-width="2" fill="none" stroke-linecap="round"/></svg></button>
     </div>
     <div id="pm-wrap"><svg id="pmStage" viewBox="0 0 200 125" role="img" aria-label="Mission"></svg>
-      <div id="pmPad" role="group" aria-label="Direction pad"><span class="pm-arw u"></span><span class="pm-arw r"></span><span class="pm-arw d"></span><span class="pm-arw l"></span><span class="pm-dot"></span></div></div>
   </section>
 
   <!-- READING DECKS -->
@@ -2904,17 +2895,14 @@ function pmAlert(m){const c=BY_ID[m.pup];
     sfx.match();say(`${x.name} is on the way! ${m.goal} Touch where you want to go!`);closeOverlay();pmStart(m)}}
 
 /* play: steer with the direction pad (or arrow keys); the camera follows the pup */
-const pmStage=document.getElementById("pmStage"),pmPad=document.getElementById("pmPad");
-let pmS=null,pmView={vw:200,vh:125},pmPadDir=[0,0];const pmKeys={};
+const pmStage=document.getElementById("pmStage");
+let pmS=null,pmView={vw:200,vh:125},pmPadDir=[0,0];const pmKeys={};/* pmPadDir stays [0,0]: driving is by finger (arrow keys still work on a computer) */
 const PM_CAP=3;
 function pmLayout(){const r=document.getElementById("pm-wrap").getBoundingClientRect();if(!r.width||!r.height)return;
-  const s=Math.max(2,Math.min(r.width/275,r.height/165));
+  /* show about 275 x 165 of the world, but never leave empty space (the world is 400 x 250) */
+  const s=Math.max(2,Math.min(r.width/275,r.height/165),r.width/PM_WW,r.height/PM_WH);
   pmView={vw:Math.min(PM_WW,r.width/s),vh:Math.min(PM_WH,r.height/s)};
   const sh=Math.floor(pmView.vh*s);pmStage.style.width=Math.floor(pmView.vw*s)+"px";pmStage.style.height=sh+"px";
-  /* tall screens (iPad held upright): the map is shorter than the space, so the pad gets its own spot under it */
-  const gap=r.height-sh,big=Math.min(240,gap-24,r.width*.42);
-  if(big>=150){Object.assign(pmPad.style,{width:big+"px",left:"50%",transform:"translateX(-50%)",bottom:Math.max(8,(gap-big)/2)+"px"})}
-  else{Object.assign(pmPad.style,{width:"",left:"",transform:"",bottom:""})}
   if(pmS)pmDraw()}
 function pmStart(m){if(pmS&&pmS.raf)cancelAnimationFrame(pmS.raf);
   const L=pmGen(m),fly=m.pup==="breeze";
@@ -2959,16 +2947,6 @@ function pmHint(on){pmS.els.forEach((el,i)=>{const it=pmS.items[i];el.classList.
 function pmNext(){const S=pmS,m=S.m;
   if(m.mode==="gather"&&S.carried.length&&(S.carried.length>=PM_CAP||!S.items.some(i=>i.state==="wait")))return [m.dest[0],m.dest[1]];
   let best=null,bd=1e9;S.items.forEach(it=>{if(it.done||it.state!=="wait")return;const d=Math.hypot(it.x-S.x,it.y-S.y);if(d<bd){bd=d;best=[it.x,it.y]}});return best}
-/* direction pad: press anywhere on it and slide; 8 directions */
-function pmPadAt(e){const r=pmPad.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);
-  if(Math.hypot(dx,dy)<r.width*.12){pmPadDir=[0,0];pmPad.dataset.dir="";return}
-  const a=Math.round(Math.atan2(dy,dx)/(Math.PI/4)),k=((a%8)+8)%8;const D=[[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1],[0,-1],[1,-1]][k];
-  pmPadDir=D;pmPad.dataset.dir=["r","dr","d","dl","l","ul","u","ur"][k]}
-let pmPadId=null;
-pmPad.addEventListener("pointerdown",e=>{e.preventDefault();audio();pmPadId=e.pointerId;try{pmPad.setPointerCapture(e.pointerId)}catch(_){}pmPadAt(e)});
-pmPad.addEventListener("pointermove",e=>{if(e.pointerId===pmPadId)pmPadAt(e)});
-function pmPadUp(e){if(e.pointerId!==pmPadId)return;pmPadId=null;pmPadDir=[0,0];pmPad.dataset.dir=""}
-["pointerup","pointercancel","lostpointercapture"].forEach(t=>pmPad.addEventListener(t,pmPadUp));
 const PM_KEYMAP={ArrowUp:"u",ArrowDown:"d",ArrowLeft:"l",ArrowRight:"r",w:"u",s:"d",a:"l",d:"r"};
 addEventListener("keydown",e=>{const k=PM_KEYMAP[e.key];if(k&&!document.getElementById("pmplay").hidden&&document.getElementById("overlay").hidden){pmKeys[k]=true;e.preventDefault()}});
 addEventListener("keyup",e=>{const k=PM_KEYMAP[e.key];if(k)pmKeys[k]=false});
@@ -3060,7 +3038,7 @@ document.getElementById("artPups").innerHTML=`<svg viewBox="-27 -31 54 50" aria-
 /* ---------- no zooming (double-tap or pinch) on the iPad ---------- */
 (function(){let lastEnd=0;
   document.addEventListener("touchend",e=>{const now=Date.now(),quick=now-lastEnd<350;lastEnd=now;
-    if(quick&&e.cancelable&&!e.target.closest("button,input,textarea,select,a,label,svg,canvas,#pmPad"))e.preventDefault()},{passive:false});
+    if(quick&&e.cancelable&&!e.target.closest("button,input,textarea,select,a,label,svg,canvas"))e.preventDefault()},{passive:false});
   document.addEventListener("dblclick",e=>e.preventDefault(),{passive:false});
   ["gesturestart","gesturechange","gestureend"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
   document.addEventListener("touchmove",e=>{if(e.touches.length>1&&e.cancelable)e.preventDefault()},{passive:false});})();
